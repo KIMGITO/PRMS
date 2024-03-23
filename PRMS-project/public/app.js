@@ -1,48 +1,58 @@
 // searching by filtering from table
 
 $(document).ready(function() {
-    var typingTimer;
-    var doneTypingInterval = 500; 
-    
-    $("#searchBtn").on('click',function(){
-      filterUsers();
-    });
-     //search after typping has stopped for 1/2 a sec
-    $('#searchInput').on('input', function() {
+  var typingTimer;
+  var doneTypingInterval = 500; 
+  
+  $("#searchBtn").on('click',function(){
+      filterData();
+  });
+  
+  $('#searchInput').on('input', function() {
       clearTimeout(typingTimer);
       typingTimer = setTimeout(function() {
-
-          filterUsers();
+          filterData();
       }, doneTypingInterval);
-
-    
-      function filterUsers(){
-        $("#tableComment").empty();
-              var searchText = $('#searchInput').val();
-              var searchQuery = searchText.toLowerCase();
-              if(searchText.length > 1){
-                var resultsCount = 0;
-                $('#userList tr').each(function() {
-                  var rowText = $(this).text().toLowerCase();
-                  if (rowText.indexOf(searchQuery) !== -1) {
-                      $(this).show(); 
-                      resultsCount++;
-                  } else {
-                      $(this).hide();
-                  }
-                });
-                if(resultsCount > 0){
-                  $("#tableComment").append(`<p class="text-primary fw-semibold"> Showing ${resultsCount} result${(resultsCount>1)?"s":""} for <span class="text-success"><u>${searchText}</u></span>.</p>`)
-                }else{
-                  $("#tableComment").append(`<p class="text-danger fw-semibold"> No results for <span class="text-success"><u>${searchText}</u></span>.</p>`)
-                }
-              }else{
-                $('#userList tr').show();
-              }  
-      }
-    });
   });
 
+  function filterData() {
+      $("#tableComment").empty();
+      var searchText = $('#searchInput').val().toLowerCase();
+      var searchParts = searchText.split(' ');
+
+      if(searchText.length > 0){
+          var resultsCount = 0;
+          
+          $('#dataList tr').each(function() {
+              var row = $(this);
+              var rowText = row.text().toLowerCase();
+              var matchesAllParts = true;
+
+              $.each(searchParts, function(index, part) {
+                  if (rowText.indexOf(part) === -1) {
+                      matchesAllParts = false;
+                      return false; 
+                  }
+              });
+
+              if (matchesAllParts) {
+                  row.show(); 
+                  resultsCount++;
+              } else {
+                  row.hide();
+              }
+          });
+          
+          if(resultsCount > 0){
+              $("#tableComment").append(`<p class="text-primary fw-semibold"> Showing ${resultsCount} result${(resultsCount>1)?"s":""} for <span class="text-success"><u>${searchText}</u></span>.</p>`)
+          } else {
+              $("#tableComment").append(`<p class="text-danger fw-semibold"> No results for <span class="text-success"><u>${searchText}</u></span>.</p>`)
+          }
+      } else {
+          $('#dataList tr').show();
+      }  
+  }
+});
 
 // add and remove Plaintiffs 
 $(document).ready(function(){
@@ -198,7 +208,7 @@ $(document).ready(function(){
 });
 });
    
-
+//
 function displayError(target, message) {
   var errorMessage = $(`<p class="text-sm text-danger">${message}</p>`)
   $(target).find('.text-danger').remove();
@@ -266,7 +276,7 @@ function displayError(target, message) {
     });
   });
 
-
+  //Confirm delete
   function confirmDelete(id,item = 'item') {
     if (confirm(`Are you sure you want to delete this ${item}?`)) {
     $(`#form-${id}`).submit()
@@ -274,4 +284,8 @@ function displayError(target, message) {
       return;
     }
   }
+
+
+
+ 
 

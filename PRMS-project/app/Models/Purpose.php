@@ -10,6 +10,6 @@ class Purpose extends Model
     use HasFactory;
 
     public function transactions(){
-        return $this->belongsToMany(Transaction::class);
+        return $this->belongsToMany(Transaction::class,'transaction_purpose_pivot');
     }
 }

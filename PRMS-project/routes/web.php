@@ -9,6 +9,7 @@ use App\Http\Controllers\JudgeController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PurposeController;
 use App\Http\Controllers\CasetypeController;
+use App\Http\Controllers\TransactionController;
 
 
 /*
@@ -50,9 +51,16 @@ Route::middleware(['user.auth'])->group(function (){
     Route::post('/files/searchFile', [FIleController::class,'search'])->name('search.file');
     Route::get('/files/newFile', [FIleController::class,'create'])->name('create.file.form');
     Route::post('/files/addNewFile', [FIleController::class,'store'])->name('store.new.file');
-    Route::get('/files/loanFile/{id}', [FileController::class,'loan'])->name('loan.file');
-    Route::post('/files/loan/{id}', [FileController::class,'storeLoan'])->name('store.loan.file');
-    Route::get('/files/return',[FIleController::class,'returnFile'])->name('retuen.file');
+    Route::get('/file/info/{id}',[FIleController::class,'info'])->name('file.info');
+});
+
+//File transactions
+Route::middleware(['user.auth'])->group(function (){
+    Route::get('/files/loanFile/{id}', [TransactionController::class,'loan'])->name('loan.file');
+    Route::post('/files/loan/{id}', [TransactionController::class,'storeLoan'])->name('store.loan.file');
+    Route::get('/files/return',[TransactionController::class,'returnFile'])->name('return.file');
+    Route::get('/files/return/{id}',[TransactionController::class,'returnFile'])->name('return.file.info');
+    route::get('/files/storeReturn/{id}',[TransactionController::class,'storeReturn'])->name('store.return.file');
 });
 
 // System
@@ -74,7 +82,6 @@ Route::middleware(['user.auth'])->group(function (){
 });
 
 // Departments
-
 Route::middleware(['user.auth','admin'])->group(function(){
     Route::get('/system/departments',[SystemController::class,'department'])->name('new.department');
     Route::post('/system/new/department',[SystemController::class,'storeDepartment'])->name('store.new.department');
@@ -82,3 +89,5 @@ Route::middleware(['user.auth','admin'])->group(function(){
     Route::get('/system/delete/{id}',[SystemController::class,'destroyDepartment'])->name('destroy.department');
     Route::put('/system/edit/{id}',[SystemController::class,'updateDepartment'])->name('edit.department');
 });
+
+Route::get('/back/{url}',[SystemController::class,'back'])->name('redirect.back');

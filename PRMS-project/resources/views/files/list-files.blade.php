@@ -29,12 +29,12 @@
                         <img src="{{ asset('images/logos/logo.png') }}" class="rounded-circle" width="150" alt="">
                     </div>
                     <div class="col-md-5 col-lg-4">
-                      <form class="form-inline" id="searchForm" method="post" action="{{ route('search.file') }}">
+                      <form class="form-inline">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light-success offset border-0 table-hover rounded-start-5" id="searchIcon">
                               <button type="button" id="searchBtn" class="btn rounded-pill text-dark "><i class="fas fa-search "></i></button>
                             </span>
-                            <input type="text" id="search" name="query" placeholder="search file" value="{{ old('query',$query) }}" class="form-control bg-light-success border-0 px-4 p-0 rounded-start-0 rounded-end-5 text-dark fs-4" placeholder="Search">
+                            <input type="text" id="searchInput" name="query" placeholder="search user " class="form-control bg-light-success border-0 px-4 p-0 rounded-start-0 rounded-end-5 text-dark fs-4" placeholder="Search" aria-label="Search" aria-describedby="searchIcon" >
                         </div>
                       </form>
                     </div>
@@ -84,36 +84,34 @@
                             <div class="text-priamry fw-semibold" id="tableComment"></div>
                             <tr class="bg-info">
                                 <th>Case Type</th>
-                                <th>Initials</th>
                                 <th>Case Number</th>
                                 <th>Plaintiffs</th>
                                 <th>Defendants</th>
                                 <th>Presiding Judge</th>
                                 <th>Filing Date</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th colspan="2">Action</th>
                             </tr>
                         </thead>
                         
-                        <tbody id="userList">
+                        <tbody id="dataList">
                           @php
                               $count = 1;
                           @endphp
                           @foreach ($files as $file)
                           <tr class="p-0">
                             <td class="text-capitalize">{{$file->casetype->case_type}}</td>
-                            <td class="text-capitalize">{{$file->casetype->initials}}</td>
-                            <td>{{$file['case_number']}}</td>
+                            <td>{{$file->casetype->initials.' '.$file->case_number}}</td>
                             <td>
                               @if (strpos($file['plaintiffs'],',') !== false)
                                   @php
                                       $plaintiffs = explode(',',$file['plaintiffs']);
                                   @endphp
-                                  <ul>
+                                  <ol>
                                     @foreach ($plaintiffs as $plaintiff)
                                       <li class="text-capitalize small">{{$plaintiff}}</li>
                                   @endforeach
-                                  </ul>
+                                  </ol>
                               @else
                               <p class="text-capitalize"> {{$file['plaintiffs']}}</p>
                               @endif
@@ -123,11 +121,11 @@
                                   @php
                                       $defendants = explode(',',$file['defendants']);
                                   @endphp
-                                  <ul>
+                                  <ol>
                                     @foreach ($defendants as $defendant)
                                       <li class="text-capitalize small">{{$defendant}}</li>
                                   @endforeach
-                                  </ul>
+                                  </ol>
                               @else
                               <p class="text-capitalize"> {{$file['defendants']}}</p>
                               @endif
@@ -135,24 +133,27 @@
                             <td class="text-capitalize">{{$file->judge->name}}</td>
                             <td class="text-capitalize small text-info">{{$file->filing_date}}</td>
                             <td class="text-capitalize {{ $file->status == 'available'?' text-primary':'text-danger' }}">{{$file->status}}</td>
-                            <td class="bg-light">
+                            <td colspan="2" class="bg-light">
                               <div class="row">
                                 @php
                                     $id = Crypt::encrypt($file['id']);
                                 @endphp
-                                <a href="{{ route('loan.file',['id'=>$id])}}" title="Loan File" class="btn {{ $file['status']=='available'?'btn-outline-success':'btn-outline-secondary shandow-md disabled' }}  col-6 btn btn-rounded-0 btn-sm border-0">
+                                <a href="{{ route('loan.file',['id'=>$id])}}" title="Loan File" class="btn {{ $file['status']=='available'?'btn-outline-success':'btn-outline-secondary shandow-md disabled' }}  col-4 btn btn-rounded-0 py-2 border-0">
                                   @if ($file['status']=='available')
                                   <i class="fas fa-handshake fs-4 " aria-hidden="true"></i>
                                   @else
                                   <i class="fas fa-handshake-slash fs-4 " aria-hidden="true"></i>
                                   @endif
                                 </a>
-                              <form class="col-6" action="{{ route('destroy.user',['id'=>$file['id']]) }}" id="form-{{ $file['id'] }}" method="POST">
-                                @method('DELETE')
-                                <div onclick="confirmDelete({{$file['id']}},'File')" class="btn btn-outline-danger btn btn-rounded-0 btn-sm border-0">
-                                  <i class="fa fa-file-circle-xmark fs-4 " aria-hidden="true"></i>
-                                </div>
-                              </form>
+                                <a href="{{ route('file.info',['id'=>$id])}}"  class="btn col-4 text-center btn-outline" title="More info">
+                                  <i class="fa fa-info-circle me-5" aria-hidden="true"></i>
+                                </a>
+                                <form title="Delete" class="col-4 ms-0" action="{{ route('destroy.user',['id'=>$file['id']]) }}" id="form-{{ $file['id'] }}" method="POST">
+                                  @method('DELETE')
+                                  <div onclick="confirmDelete({{$file['id']}},'File')" class="btn btn-outline-danger btn-rounded px-2 border-0">
+                                    <i class="fa fa-file-circle-xmark fs-4 " aria-hidden="true"></i>
+                                  </div>
+                                </form>
                               </div>
                           </td>
                           </tr>
@@ -166,7 +167,7 @@
                           </tr>
                           @endif
                         </tbody>
-                      </table>
+                    </table>
                 </div>
               </div>
             </div>

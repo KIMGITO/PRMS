@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class SystemController extends Controller
@@ -88,5 +89,14 @@ class SystemController extends Controller
             abort(404);
         }
         
+    }
+
+    public function back($url){ 
+        try {
+            $url  = str_replace('-', '/', $url);
+            return redirect($url);
+        } catch (\Throwable $th) {
+            return redirect()->back();
+        }
     }
 }

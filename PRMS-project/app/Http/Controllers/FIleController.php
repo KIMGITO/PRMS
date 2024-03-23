@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\File;
+use App\Models\User;
 use App\Models\Court;
 use App\Models\Judge;
 use App\Models\Purpose;
@@ -12,6 +13,7 @@ use App\Models\Department;
 use App\Models\Transaction;
 use illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class FIleController extends Controller
@@ -182,45 +184,12 @@ class FIleController extends Controller
      * SHow the file to loan
      * 
      */
-    public function loan($id = null){
-       
-        try {
-         $id = decrypt($id);
-        }
-        catch (\Throwable $th) {
-            abort(404);
-            return redirect()->back();
-        }
-
-         $data = Transaction::where('file_id',$id)
-                ->orderBy('created_at','desc')
-                ->first();
-        if(!empty($data)){
-            if($data->dateBack === null){
-                return redirect()->route('list.files')->with('error','This file has been loaned already');
-            }
-        }
-         
-
-         $file = File::where('id',$id)->firstOrFail();
-         $departments = Department::all();
-         $purpose = Purpose::all();
-         return view('files.loan-file',[
-            'file'=>$file,
-            'purpose'=>$purpose,
-            'departments'=>$departments
-        ]);
-        
-         
-     }
-
+  
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-
-        
         // check for constraints
         $customAttributes = [
             'caseNumber' => 'case number',
@@ -286,70 +255,43 @@ class FIleController extends Controller
 
     }
 
-    public function storeLoan(Request $request, $id){
-        // dd($request->all());
-        try {
-            $id = decrypt($id);
-           
-            $data = Transaction::where('file_id', $id)
-            ->orderBy('created_at', 'desc')
-            ->first();
-            if(!empty($data)){
-                if($data->dateBack === null){
-                    return redirect()->back()->with('error','This file has been loaned already');
-                }
-            }
-            
-
-            $user = auth()->user();
-            $validator = Validator::make($request->all(), [
-                'caseNumber'=>['required'],
-                'department'=>['required'],
-                'name'=>['required','string'],
-                'dateBack'=>['required','date','after_or_equal:today'],
-                'purpose'=>['required']
-                
-            ],[
-                'name.required'=>'Requester name is required.',
-                'dateBack.after_or_equal'=>'Date can only be today or future',
-                'purpose.required'=>'Check at least one purpose for requesting the file.'
-            ]);
-            if($validator->fails()){
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            $purposes = $request->input('purpose');
-            Transaction::create([
-                'file_id'=>$id,
-                'user_id'=>$user->id,
-                'created_at'=>Carbon::now(),
-                'updated_at'=>Carbon::now(),
-                'department_id'=>$request->input('department'),
-                'name'=>$request->input('name'),
-                'issuedDate'=>Carbon::today()->toDateString(),
-                'dateExpected'=>$request->input('dateBack')
-            ])->purposes()->attach($purposes);
-           
-            return redirect()->route('list.files',)->with('success','File has been loaned.');
-        } catch (\Throwable $th) {
-            abort(404);
-        }
-        
-
-    }
-
-    public function returnFile(){
-        $files = Transaction::all()->where('dateBack',null);
-        
-    }
+   
     
-
     /**
      * Display the specified resource.
      */
-    public function show(File $file)
+    public function info($id)
     {
-        //
+       try {
+        $id = decrypt($id);
+        $info = File::where(['id' => $id])->firstOrFail();
+
+        $count = Transaction::select('id')->where(['file_id'=>$id])->whereNotNull('dateBack')->count();
+        $status = Transaction::where('file_id',$id)->orderBy('created_at','desc')->first();
+        if(!empty($status)){
+            if($status['dateBack'] != null){
+                $info['status'] = 'available';
+            }else{
+                $info['status']= 'on Loan';
+            }
+        }else{
+            $info['status'] = 'available';
+        }
+        
+        $baseUrl = URL::to('/');
+        $previousUrl = URL::previous();
+        $backRoute = str_replace($baseUrl, '', parse_url($previousUrl, PHP_URL_PATH));
+        $backRoute = ltrim($backRoute, '/');
+        $backRoute = str_replace('/', '-', $backRoute);
+        $info['url'] = $backRoute;
+        $info['transaction_count'] = $count;
+
+        return view('files.file-info',['info'=>$info]);
+       } catch (\Throwable $th) {
+        dd($th->getMessage());
+        abort(404);
+        return;
+       }
     }
 
     /**
@@ -357,7 +299,7 @@ class FIleController extends Controller
      */
     public function edit(File $file)
     {
-        //
+        
     }
 
     /**

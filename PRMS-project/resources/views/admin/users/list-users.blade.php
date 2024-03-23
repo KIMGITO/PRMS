@@ -70,7 +70,7 @@
                             </tr>
                         </thead>
                         
-                        <tbody id="userList">
+                        <tbody id="dataList">
                           @php
                               $count = 1;
                           @endphp
@@ -84,7 +84,7 @@
                             <td>{{$user['role']}}</td>
                             <td class="bg-light">
                               <div class="row">
-                                <a href="{{ route('edit.user.form',['id'=>$user['id']])}}" class="btn btn-outline-success col-6 btn btn-rounded-0 btn-sm border-0">
+                                <a href="{{ route('edit.user.form',['id'=>$user['id']])}}" class="btn btn-outline-success col-4 btn btn-rounded-0 btn-sm border-0">
                                   <i class="fa fa-user-edit fs-4 " aria-hidden="true"></i>
                                 </a>
                               <form class="col-6" action="{{ route('destroy.user',['id'=>$user['id']]) }}" id="form-{{$user['id']}}" method="POST">

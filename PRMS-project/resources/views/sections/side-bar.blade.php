@@ -110,7 +110,7 @@
                   <i class="fa fa-file-export"></i>
                   <p class="mb-0 fs-4">Loan File</p>
                 </a>
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
+                <a href="{{ route('return.file') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
                   <i class="fa fa-file-circle-check"></i>
                   <p class="mb-0 fs-4">Return File</p>
                 </a>
