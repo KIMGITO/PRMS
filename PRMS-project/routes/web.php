@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FIleController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CourtController;
 use App\Http\Controllers\JudgeController;
@@ -91,3 +92,5 @@ Route::middleware(['user.auth','admin'])->group(function(){
 });
 
 Route::get('/back/{url}',[SystemController::class,'back'])->name('redirect.back');
+
+Route::get('/email/test',[MailController::class,'index']);

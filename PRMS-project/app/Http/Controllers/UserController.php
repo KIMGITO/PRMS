@@ -77,6 +77,7 @@ class UserController extends Controller
         $userName = $user->first_name." ".$user->last_name;
         if($user->save())
         {
+            $opt = mt_rand(123456, 987654);
             return redirect('/admin')->with('success', 'New User, '.$userName.' was successifuly created');
         }else{
             return redirect('/admin')->with('error',"Error occured when creating user '.$userName.'") ;
