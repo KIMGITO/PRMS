@@ -27,6 +27,8 @@ use App\Http\Controllers\TransactionController;
 Route::get('/firstAdmin/form',[UserController::class, 'createAdmin'])->name("first.admin");
 Route::post('/firstAdmin', [UserController::class,'storeAdmin'])->name('store.first.admin');
 Route::post('/logIn',[AuthController::class,'login'])->name('index.auth');
+Route::get('/email/verify',[AuthController::Class,'verifyEmailForm'])->name('verify.email.form');
+Route::post('/email/veirfyEmail/{id}',[AuthController::class,'verifyOTP'])->name('verify.otp');
 
 //Auth middleware group
 Route::middleware(['user.auth'])->group(function(){
@@ -93,4 +95,4 @@ Route::middleware(['user.auth','admin'])->group(function(){
 
 Route::get('/back/{url}',[SystemController::class,'back'])->name('redirect.back');
 
-Route::get('/email/test',[MailController::class,'index']);
+// Route::get('/email/test',[MailController::class,'index']);

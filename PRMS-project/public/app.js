@@ -285,6 +285,55 @@ function displayError(target, message) {
     }
   }
 
+  $(document).ready(function() {
+    // Target the first input when the document is loaded
+    $('.digit-input:first').focus();
+
+    // Initialize an empty string to store input values
+    var collectedInputs = '';
+
+    $('.digit-input').on('input', function(e) {
+        var $this = $(this);
+        var inputValue = $this.val();
+        
+        // Check if the input is a single digit
+        if (/^\d$/.test(inputValue)) {
+            var $nextInput = $this.next('.digit-input');
+            
+            // Focus on the next input if it exists
+            if ($nextInput.length) {
+                $nextInput.focus();
+            }
+
+            collectedInputs += inputValue;
+            $('#collectedInputs').val(collectedInputs);
+
+            if(collectedInputs.length == 6){
+              alert($('#collectedInputs').val())
+              $('form').submit();
+            }
+          
+            
+        }
+       
+    });
+  $('.digit-input').on('keyup', function(e){
+    var $this = $(this);
+    var inputValue = $this.val();
+    var $prevInput = $this.prev('.digit-input');
+
+    if(e.keyCode == '8'){
+      if(!inputValue.length){
+        $prevInput.val('');
+        $prevInput.focus();
+        collectedInputs = collectedInputs.slice(0, -1);
+      }else{
+        inputValue.focus();
+      }
+    }
+  })
+});
+
 
 
  

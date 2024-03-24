@@ -3,8 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Validation\Rule;
+use App\Events\UserCreated;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Events\UserWithOptCreated;
+use App\Events\UserWithOTPCreated;
+use App\Events\UserRegisterdWithOTP;
+use App\Listeners\SendOtpNotification;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -57,34 +63,45 @@ class UserController extends Controller
             'phone' => 'required|string|max:15',
             'password' => 'required|string|min:8',
         ]);
-
         $validator->setAttributeNames($customAttributes);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $user = New User();
-        $user->first_name = $request->input('firstName');
-        $user->last_name = $request->input('lastName');
-        $user->national_id = $request->input('nationalId');
-        $user->work_id = $request->input('workId');
-        $user->email = $request->input('email');
-        $user->phone = $request->input('phone');
-        $user->role = $request->input('role');
-        $user->active = true;
-        $user->password = bcrypt($request->input('password'));
+       
+        $otp = $this->makeOTP();
+        $user = User::create([
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
+            'national_id' => $request->input('nationalId'),
+            'work_id' => $request->input('workId'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'role' => $request->input('role'),
+            'verified_at' => $otp,
+            'password' => bcrypt($request->input('password')),
+        ]);
 
-        $userName = $user->first_name." ".$user->last_name;
-        if($user->save())
-        {
-            $opt = mt_rand(123456, 987654);
-            return redirect('/admin')->with('success', 'New User, '.$userName.' was successifuly created');
-        }else{
-            return redirect('/admin')->with('error',"Error occured when creating user '.$userName.'") ;
-        }
+        event(new UserWithOTPCreated($request->input('email'), $otp, 'OTP- Verification'));
+
+
+
+        // $userName = $request->input('firstName')." ".$request->input('lastName');
+        // if($user->save())
+        // {
+            
+        //     return redirect('/admin')->with('success', 'New User, '.$userName.' was successifuly created');
+        // }else{
+        //     return redirect('/admin')->with('error',"Error occured when creating user '.$userName.'") ;
+        // }
         
 
         
+    }
+
+    private function makeOTP(){
+        $otp = mt_rand(123456, 987654);
+        return $otp;
     }
     /**
      * Create an admin user when system launhes
@@ -117,28 +134,22 @@ class UserController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        $user = New User();
-        $user->first_name = $request->input('firstName');
-        $user->last_name = $request->input('lastName');
-        $user->national_id = $request->input('nationalId');
-        $user->work_id = $request->input('workId');
-        $user->email = $request->input('email');
-        $user->phone = $request->input('phone');
-        $user->role = $request->input('role');
-        $user->active=true;
-        $user->password = bcrypt($request->input('password'));
+        $otp = $this->makeOTP();
+        $user = User::create([
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
+            'national_id' => $request->input('nationalId'),
+            'work_id' => $request->input('workId'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'role' => $request->input('role'),
+            'verified_at' => $otp,
+            'password' => bcrypt($request->input('password')),
+        ]);
 
-
-        if($user->save())
-        {
-            // dd("sending to log in");
-            return redirect('/')->withInput(['email'=>$request->input('email'), 'password'=>$request->input('password')])->with('success','Account created successifuly. Now you can log in');
-        }else{
-            return redirect('/')->with('error',"Error occured when creating user'") ;
-        }
-        
-
-        
+        event(new UserWithOTPCreated($request->input('email'),$otp, 'OTP-verification'));        
+        return redirect()->route('verify.email.form');
+       
     }
 
     /**

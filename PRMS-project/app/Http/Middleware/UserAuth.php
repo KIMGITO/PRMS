@@ -17,11 +17,7 @@ class UserAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // if(User::count() > 0){
-        //     return $next($request);
-        // }else{
-        //     return redirect()->route('first.admin');
-        // }
+       
     
         if($request->route()->getName() == 'index'){
             if(User::count() == 0){

@@ -43,6 +43,13 @@ class AuthController extends Controller
         }
     }
 
+    public function verifyEmailForm(){
+    return view('admin.auth.verify-email');
+    }
+
+    public function verifyOTP($id){
+    
+    }
 
     public function logout(){
         Auth::logout();

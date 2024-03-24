@@ -154,8 +154,8 @@ $card-spacer-x: 30px !default;
 $card-border-width: 0px !default;
 $card-border-color: #ebf1f6 !default;
 $card-border-radius: 7px;
-$card-box-shadow: rgb(145 158 171 / 20%) 0px 0px 2px 0px,
-  rgb(145 158 171 / 12%) 0px 12px 24px -4px !default;
+$card-box-shadow: rgba(145, 158, 171, 0.20) 0px 0px 2px 0px,
+rgba(145, 158, 171, 0.12) 0px 12px 24px -4px !default;
 
 // Border Radius
 $border-radius: 7px !default;
@@ -205,8 +205,8 @@ $dropdown-item-padding-y: 10px !default;
 $dropdown-link-hover-bg: $gray-100 !default;
 $dropdown-link-active-bg: $gray-100;
 $dropdown-link-active-color: $dark;
-$dropdown-box-shadow: rgb(145 158 171 / 20%) 0px 0px 2px 0px,
-  rgb(145 158 171 / 12%) 0px 12px 24px -4px;
+$dropdown-box-shadow: rgba(145, 158, 171, 0.20) 0px 0px 2px 0px,
+rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
 
 // Modal
 $modal-content-border-width: 0 !default;

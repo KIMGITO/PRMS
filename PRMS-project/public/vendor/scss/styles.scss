@@ -5,8 +5,9 @@
 // Import Bootstrap source files (Required file)
 @import "../libs/bootstrap/scss/bootstrap.scss";
 
-
+//Import Variables 
 @import "./variables/theme-variables";
+@import "./variables/digits-input-variables";
 
 
 // Scrollbar style (Required file)

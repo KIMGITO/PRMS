@@ -16,7 +16,13 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'national_id',
+        'work_id',
+        'phone',
+        'role',
+        'verified_at',
         'email',
         'password',
     ];
@@ -44,4 +50,6 @@ class User extends Authenticatable
     public function file(){
         return $this->hasMany(File::class);
     }
+
+   
 }

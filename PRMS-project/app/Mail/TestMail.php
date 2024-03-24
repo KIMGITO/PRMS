@@ -18,7 +18,7 @@ class TestMail extends Mailable
      */
     public $subject;
     public $body;
-    public function __construct($subject,$body)
+    public function __construct($subject, $body)
     {
         $this->subject = $subject;
         $this->body = $body;
@@ -40,7 +40,8 @@ class TestMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email',
+            view: 'admin.auth.otp-email',
+            with: ['subject'=>$this->subject,'body'=>$this->body]
         );
     }
 
