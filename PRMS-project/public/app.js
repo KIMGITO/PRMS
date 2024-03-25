@@ -289,8 +289,8 @@ function displayError(target, message) {
     // Target the first input when the document is loaded
     $('.digit-input:first').focus();
 
-    // Initialize an empty string to store input values
-    var collectedInputs = '';
+    // Initialize an empty array to store input values
+    var collectedInputs = [];
 
     $('.digit-input').on('input', function(e) {
         var $this = $(this);
@@ -305,34 +305,44 @@ function displayError(target, message) {
                 $nextInput.focus();
             }
 
-            collectedInputs += inputValue;
-            $('#collectedInputs').val(collectedInputs);
+            collectedInputs.push(inputValue);
+            $('#collectedInputs').val(collectedInputs.join('')); // Update collectedInputs as a string
 
-            if(collectedInputs.length == 6){
-              alert($('#collectedInputs').val())
-              $('form').submit();
-            }
-          
-            
+            if (collectedInputs.length == 6) {
+              $('.digit-input').css({'border-color': 'greed'}).addClass('bg-light-success border-success rounded-circle').animate({
+                'border-width': '21px'
+              }, 1000, function() {
+                  $('.digit-input').val('');
+                  
+                  $('form').submit();
+                  $('.digit-input').css({'background-color': '', 'border-color': '', 'border-width': ''}).removeClass('bg-light-success border-success rounded-circle');
+              });
+                
+            } 
         }
-       
     });
-  $('.digit-input').on('keyup', function(e){
-    var $this = $(this);
-    var inputValue = $this.val();
-    var $prevInput = $this.prev('.digit-input');
 
-    if(e.keyCode == '8'){
-      if(!inputValue.length){
-        $prevInput.val('');
-        $prevInput.focus();
-        collectedInputs = collectedInputs.slice(0, -1);
-      }else{
-        inputValue.focus();
-      }
-    }
-  })
+    $('.digit-input').on('keydown', function(e){
+        var $this = $(this);
+        var inputValue = $this.val();
+        var $prevInput = $this.prev('.digit-input');
+
+        if(e.keyCode == '8'){ // If backspace is pressed
+            // Animate clearing and changing border color
+            $('.digit-input').val('');
+            $('.digit-input').css({'border-color': 'red'}).addClass('bg-light-danger border-danger rounded-circle').animate({
+                'border-width': '21px'
+            }, 1000, function() {
+                $('.digit-input').val('');
+                collectedInputs = [];
+                $('.digit-input:first').focus();
+                $('.digit-input').css({'background-color': '', 'border-color': '', 'border-width': ''}).removeClass('bg-light-danger border-danger rounded-circle');
+            });
+        }
+    });
 });
+
+
 
 
 

@@ -6,6 +6,7 @@
  */
 @import url(../libs/simplebar/dist/simplebar.css);
 @import url(../css/icons/tabler-icons/tabler-icons.css);
+@import url(../css/icons/fontawsome/css/all.css);
 :root,
 [data-bs-theme="light"] {
   --bs-blue: #3c3cfe;

@@ -45,22 +45,29 @@
                         </div>
                       @endif
                       <div class="row">
-                        <card class="title mb-sm-2 sm-lg-0">
+                        <card class="title sm-lg-0">
                         <i class="fas fa-envelope-circle-check fa-7x float-md-start pb-3 pb-lg-2 pe-md-1 pe-lg-3 text-success"></i>
-                        <p class="pt-2">Hello Dennis, An email with 6 digts OTP was sent to <span class="text-success">denniskimanthi@gmail.com</span>. 
-                        Copy the code here to verify the email.</p>
+                        <p class="pt-2">Hello <span class="text-capitalize">{{$userName}}</span>, An email with 6 digts OTP was sent to <span class="text-success">{{$email}}</span>. 
+                        Type the code here to verify the email.</p>
+                        
                       </card>
-                      </div>
-                        <div class="digit-container">
-                              <input type="text" class="digit-input" maxlength="1">
-                              <input type="text" class="digit-input" maxlength="1">
-                              <input type="text" class="digit-input" maxlength="1">
-                              <input type="text" class="digit-input" maxlength="1">
-                              <input type="text" class="digit-input" maxlength="1">
-                              <input type="text" class="digit-input" maxlength="1">
-                              <input type="text" name="otp"  class="d-none" id="collectedInputs">
-                          </div>
                       
+                      </div>
+                      
+                        <div class="digit-container">
+                          <input type="text" class="digit-input fa-jump " maxlength="1">
+                          <input type="text" class="digit-input" maxlength="1">
+                          <input type="text" class="digit-input" maxlength="1">
+                          <input type="text" class="digit-input" maxlength="1">
+                          <input type="text" class="digit-input" maxlength="1">
+                          <input type="text" class="digit-input" maxlength="1">
+                          <input type="text" name="otp"  class="d-none" id="collectedInputs">
+                        </div>
+                  </div>
+                  <div class="mt-1" >
+                    @if (session('resend'))
+                      <a href="{{ route('resend.otp')}}" class=" btn btn-outline-primary py-0 fw-bold hter fs-3 text-end offset-6">Click Here to resnd OTP</a>
+                    @endif
                   </div>
                   <div class="card-footer bg-success  mt-5 mt-lg-1 py-2 position-relative">
                   </div>
@@ -71,6 +78,7 @@
   </main>
  </body>
  <script src="{{ asset('vendor/js/jquery.min.js') }}"></script>
+ <script src="{{ asset('vendor/css/icons/fontawsome/js/all.min.js') }}"></script>
   <script src="{{ asset('app.js')}}"></script>
 </body>
 

@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use App\Events\UserWithOptCreated;
 use App\Events\UserWithOTPCreated;
 use App\Events\UserRegisterdWithOTP;
+use Illuminate\Support\Facades\Auth;
 use App\Listeners\SendOtpNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
@@ -147,7 +148,8 @@ class UserController extends Controller
             'password' => bcrypt($request->input('password')),
         ]);
 
-        event(new UserWithOTPCreated($request->input('email'),$otp, 'OTP-verification'));        
+        event(new UserWithOTPCreated($request->input('email'),$otp, 'OTP-verification'));   
+        Auth::login($user);
         return redirect()->route('verify.email.form');
        
     }

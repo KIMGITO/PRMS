@@ -28,7 +28,8 @@ Route::get('/firstAdmin/form',[UserController::class, 'createAdmin'])->name("fir
 Route::post('/firstAdmin', [UserController::class,'storeAdmin'])->name('store.first.admin');
 Route::post('/logIn',[AuthController::class,'login'])->name('index.auth');
 Route::get('/email/verify',[AuthController::Class,'verifyEmailForm'])->name('verify.email.form');
-Route::post('/email/veirfyEmail/{id}',[AuthController::class,'verifyOTP'])->name('verify.otp');
+Route::post('/email/veirfyEmail',[AuthController::class,'verifyOTP'])->name('verify.otp');
+Route::get('/otp/resend',[AuthController::Class,'resendOTP'])->name('resend.otp');
 
 //Auth middleware group
 Route::middleware(['user.auth'])->group(function(){
