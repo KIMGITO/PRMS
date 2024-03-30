@@ -25,32 +25,41 @@ use App\Http\Controllers\TransactionController;
 */
 //NO middleware
 Route::get('/firstAdmin/form',[UserController::class, 'createAdmin'])->name("first.admin");
-Route::post('/firstAdmin', [UserController::class,'storeAdmin'])->name('store.first.admin');
+Route::post('/firstAdmin', [UserController::class,'store'])->name('store.first.admin');
 Route::post('/logIn',[AuthController::class,'login'])->name('index.auth');
-Route::get('/email/verify',[AuthController::Class,'verifyEmailForm'])->name('verify.email.form');
-Route::post('/email/veirfyEmail',[AuthController::class,'verifyOTP'])->name('verify.otp');
-Route::get('/otp/resend',[AuthController::Class,'resendOTP'])->name('resend.otp');
+Route::get('/back/{url}',[SystemController::class,'back'])->name('redirect.back');
+Route::get('/forgot/password',[AuthController::class,'forgotPassword'])->name('forgot.password.form');
+Route::post('/forgot/password/email',[AuthController::class,'forgotPasswordEmail'])->name('forgot');
+Route::get('/email/sent',function(){ return view('user.sent-reset-link');})->name('reset.password.email.sent');
+Route::get('/reset/password/{token}',[AuthController::class,'resetPasswordForm'])->name('reset.password.form');
+route::post('/reset/new/password/{token}', [AuthController::class,'resetPassword'])->name('reset.password');
+
+Route::middleware(['verified'])->group(function(){
+    Route::get('/email/verify',[AuthController::Class,'verifyEmailForm'])->name('verify.email.form');
+    Route::post('/email/verifyEmail',[AuthController::class,'verifyOTP'])->name('verify.otp');
+    Route::get('/otp/resend',[AuthController::Class,'resendOTP'])->name('resend.otp');
+});
 
 //Auth middleware group
-Route::middleware(['user.auth'])->group(function(){
+Route::middleware(['user.auth','verified'])->group(function(){
     Route::get('/', function(){return view('index');})->name('index');
     Route::get('/user', function(){ return view('user/home'); })->name('user');
     Route::get('/logOut',[AuthController::class,'logout'])->name('logout');
 });
 
 //Admin routes
-Route::middleware([ 'user.auth','admin'])->group(function () {
+Route::middleware([ 'user.auth','admin','verified'])->group(function () {
     Route::get('/admin', function(){return view('admin.home');})->name('admin');
-    Route::get('/newUser', [UserController::class,'create'])->name('create.user.form');
+    Route::get('/user/list', [UserController::class,'index'])->name('user.list');
+    Route::get('/user/new', [UserController::class,'create'])->name('create.user.form');
     Route::get('/user/{id}', [UserController::class,'edit'])->name('edit.user.form');
-    Route::put('/user/{id}/edit', [UserController::class,'update'])->name('edit.user');
-    Route::get('/listUser', [UserController::class,'index'])->name('index.users');
-    Route::post('/addNewUser', [UserController::class,'store'])->name('store.new.user');
-    Route::delete('/deleteUser/{id}',[UserController::class,'destroy'])->name('destroy.user');
+    Route::put('/user/edit/{id}', [UserController::class,'update'])->name('edit.user');
+    Route::post('/user/add/new', [UserController::class,'store'])->name('store.new.user');
+    Route::delete('/user/delete/{id}',[UserController::class,'destroy'])->name('destroy.user');
 });
 
 // files management ....
-Route::middleware(['user.auth'])->group(function (){
+Route::middleware(['user.auth','verified'])->group(function (){
     Route::get('/files/listFIles', [FIleController::class,'index'])->name('list.files');
     Route::post('/files/searchFile', [FIleController::class,'search'])->name('search.file');
     Route::get('/files/newFile', [FIleController::class,'create'])->name('create.file.form');
@@ -59,7 +68,7 @@ Route::middleware(['user.auth'])->group(function (){
 });
 
 //File transactions
-Route::middleware(['user.auth'])->group(function (){
+Route::middleware(['user.auth','verified'])->group(function (){
     Route::get('/files/loanFile/{id}', [TransactionController::class,'loan'])->name('loan.file');
     Route::post('/files/loan/{id}', [TransactionController::class,'storeLoan'])->name('store.loan.file');
     Route::get('/files/return',[TransactionController::class,'returnFile'])->name('return.file');
@@ -69,7 +78,7 @@ Route::middleware(['user.auth'])->group(function (){
 
 // System
 //system config 
-Route::middleware(['user.auth'])->group(function (){
+Route::middleware(['user.auth','verified'])->group(function (){
     //case types
     Route::get('/config/caseTypes',[CasetypeController::class,'index'])->name('config.caseType');
     Route::post('/config/caseTypes/newCaseType',[CasetypeController::class,'store'])->name('store.new.caseType');
@@ -86,7 +95,7 @@ Route::middleware(['user.auth'])->group(function (){
 });
 
 // Departments
-Route::middleware(['user.auth','admin'])->group(function(){
+Route::middleware(['user.auth','admin','verified'])->group(function(){
     Route::get('/system/departments',[SystemController::class,'department'])->name('new.department');
     Route::post('/system/new/department',[SystemController::class,'storeDepartment'])->name('store.new.department');
     Route::get('/system/edit/department/{id}',[SystemController::class,'editDepartment'])->name('edit.department.form');
@@ -94,6 +103,11 @@ Route::middleware(['user.auth','admin'])->group(function(){
     Route::put('/system/edit/{id}',[SystemController::class,'updateDepartment'])->name('edit.department');
 });
 
-Route::get('/back/{url}',[SystemController::class,'back'])->name('redirect.back');
 
-// Route::get('/email/test',[MailController::class,'index']);
+//User Profile
+
+Route::middleware(['user.auth'])->group(function () {
+    Route::get('/profile', [UserController::class,'profile'])->name('user.profile');
+    Route::put('/profiile/update',[UserController::class,'profileUpdate'])->name('update.profile');
+});
+

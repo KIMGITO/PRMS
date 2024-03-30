@@ -47,8 +47,8 @@
                       <div class="row">
                         <card class="title sm-lg-0">
                         <i class="fas fa-envelope-circle-check fa-7x float-md-start pb-3 pb-lg-2 pe-md-1 pe-lg-3 text-success"></i>
-                        <p class="pt-2">Hello <span class="text-capitalize">{{$userName}}</span>, An email with 6 digts OTP was sent to <span class="text-success">{{$email}}</span>. 
-                        Type the code here to verify the email.</p>
+                        <p class="pt-2">Hello {{auth()->user()->first_name}}, <span class="">{{$message}}</span>. 
+                        Enter the code here to verify <span class="text-danger">{{auth()->user()->email}}</span> belongs to you.</p>
                         
                       </card>
                       

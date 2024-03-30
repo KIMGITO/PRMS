@@ -26,8 +26,7 @@ class UserAuth
             if(Auth::check()){
                 return redirect('/'.auth()->user()->role)->with('error',"You are already logged in as ".auth()->user()->first_name);
             }
-            
-           
+                       
         }elseif($request->route()->getName() == 'logout' && !Auth::check()){
             abort(404,'Not found');
         }elseif($request->route()->getName() != 'index.auth' && !Auth::check()){

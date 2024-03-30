@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('national_id')->unique('national_id');
             $table->string('work_id')->unique('work_id');
             $table->string('role');
-            $table->integer('verified_at');
+            $table->integer('verified');
             $table->string('password');
         });
     }

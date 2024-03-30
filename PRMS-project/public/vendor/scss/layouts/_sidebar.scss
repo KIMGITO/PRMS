@@ -62,10 +62,9 @@
         align-items: center;
         line-height: 25px;
         position: relative;
-        margin: 0px 0px 2px;
+        margin: 0px 0px 0px;
         padding: 10px;
-        border-radius: 7px;
-        gap: 15px;
+        gap: 10px;
         font-weight: $font-weight-normal;
 
         span:first-child {
@@ -78,10 +77,10 @@
         }
 
         &:hover {
-          background-color: rgba($primary, 0.1);
-          color: rgba($primary, 0.4);
+          background-color: rgba($success, 0.3);
+          color: rgba($success, 0.4);
           &.has-arrow::after {
-            border-color: $primary;
+            border-color: $success;
           }
         }
       }

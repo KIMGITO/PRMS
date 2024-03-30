@@ -15,35 +15,27 @@
         </ul> --}}
       <!-- Sidebar navigation-->
       <nav class="sidebar-nav scroll-sidebar bg-light " data-simplebar="">
-        <ul id="sidebarnav" class="py-5 ">
+        <ul id="sidebarnav" class="pb-5 ">
 
-          <li class="sidebar-item  pt-2">
-            <a class="sidebar-link d-flex gap-3 px-2 bg-secondary" href="#profile-management" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="records-management" >
+          <li class="sidebar-item pt-2">
+            <a class="sidebar-link d-flex gap-3 px-2 bg-primary" href="#profile-management" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="records-management" >
               <div class="align-center gap-4 px-2">
                 <img src="{{ asset('images/logos/logo.png') }}" alt="" width="50" height="50" class="rounded-circle">
                 <span class="fw-bolder offset-5 fs-6 text-light text-capitalize"> @if(Auth::check()) {{auth()->user()->first_name}}@endif </span>
               </div>
             </a>
           </li>
-          <div class="container collapse" id="profile-management">
-            <div class="card-body p-2 rounded bg-light-success">
-              <a href="{{ route('list.files') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
-                <i class="fa fa-file-invoice"></i>
-                <p class="mb-0 fs-4"> All Files</p>
+          <div class="container-fluid collapse p-0" id="profile-management">
+            <div class="col-12 rounded-0 p-1 bg-primary">
+              <a href="{{ route('user.profile') }}" class="btn btn-primary-outline d-flex align-items-center gap-3 dropdown-item py-1">
+                <i class="fa fa-edit text-white fs-5" aria-hidden="true"></i>
+                <p class="mb-0 fs-4 fw-bolder text-dark"> Edit</p>
               </a>
-              <a href="{{ route('create.file.form') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-info">
-                <i class="fa fa-file-circle-plus"></i>
-                <p class="mb-0 fs-4">Add File</p>
+              <a href="" class="btn btn-primary-outline d-flex align-items-center gap-3 dropdown-item py-1">
+                <i class="fa fa-calculator text-white fs-5" aria-hidden="true"></i>
+                <p class="mb-0 fs-4 fw-bolder text-dark"> Activities</p>
               </a>
-              <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-warning">
-                <i class="fa fa-file-export"></i>
-                <p class="mb-0 fs-4">Loan File</p>
-              </a>
-              <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
-                <i class="fa fa-file-circle-check"></i>
-                <p class="mb-0 fs-4">Return File</p>
-              </a>
-              <a href="{{ route('logout') }}" class="btn btn-sm btn-danger col-12"> <span class="fw-bolder me-3">Log Out</span> <i class="fas fa-user-lock"></i> </a>
+              <a href="{{ route('logout') }}" class="btn btn-sm btn-danger col-5 rounded-0 offset-7"> <span class="fw-bolder me-3">Log Out</span></a>
             </div>
           </div>
 
@@ -74,7 +66,7 @@
               </li>
               <div class="container collapse" id="user-management">
                 <div class="message-body ms-3 p ps-2 bg-dark">
-                  <a href="{{ route('index.users')}}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
+                  <a href="{{ route('user.list')}}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
                     <i class="fa fa-users-cog"></i>
                     <p class="mb-0 fs-4"> Manage Users</p>
                   </a>
@@ -182,7 +174,7 @@
               <i class="fs-5 p-2 mt-1 fa fa-sitemap"></i>
               <p class="mb-0 fs-4"> Departments</p>
             </a>
-            <a href="javascript:void(0)" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-info">
+            <a href="" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-info">
               <i class="fs-5 p-2 mt-1 fa fa-fingerprint"></i>
               <p class="mb-0 fs-4">Security</p>
             </a>
