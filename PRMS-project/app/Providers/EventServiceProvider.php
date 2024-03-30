@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\ActivityProcessed;
 use App\Events\ResetPasswordRequest;
 use App\Events\UserWithOTPCreated;
+use App\Listeners\RegisterNewActivity;
 use App\Listeners\SendOTP;
 use App\Listeners\SendPasswordResetLink;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ResetPasswordRequest::class => [
             SendPasswordResetLink::class    
+        ],
+        ActivityProcessed::class =>[
+            RegisterNewActivity::class
         ]
     ];
 

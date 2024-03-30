@@ -88,7 +88,6 @@ class SystemController extends Controller
         } catch (\Throwable $th) {
             abort(404);
         }
-        
     }
 
     public function back($url){ 
@@ -99,4 +98,6 @@ class SystemController extends Controller
             return redirect()->back();
         }
     }
+
+    
 }

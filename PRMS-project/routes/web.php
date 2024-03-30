@@ -104,6 +104,7 @@ Route::middleware(['user.auth','admin','verified'])->group(function(){
 });
 
 
+
 //User Profile
 
 Route::middleware(['user.auth'])->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ActivityProcessed;
 use App\Models\User;
 use App\Events\UserCreated;
 use Illuminate\Http\Request;
@@ -83,67 +84,17 @@ class UserController extends Controller
             'verified' => $otp,
             'password' => bcrypt($request->input('password')),
         ]);
-
+        if(!auth()->user()){
+            $user_id = 1;
+        }else{
+            $user_id = auth()->user()->id;
+        }
         event(new UserWithOTPCreated($request->input('email'), $otp, 'OTP- Verification'));
-        Auth::login($user);
+        event(new ActivityProcessed($user_id, 'A new user named '.$user->first_name.' '.$user->last_name.' was created.'));
         return redirect()->route('verify.email.form');
     }
 
     
-    /**
-     * Create an admin user when system launhes
-     */
-
-    //  public function storeAdmin(Request $request)
-    // {
-    //     //create new user
-    //     $customAttributes=[
-    //         'firstName'=>'Fist Name',
-    //         'lastName'=>'Last Name',
-    //         'nationalId'=>'ID Number',
-    //         'workId'=>'Job Number',
-    //         'email'=>'Email Address',
-    //         'phone'=>'Phone Number'
-    //     ];
-        
-    //     $validator = Validator::make($request->all(), [
-    //         'firstName' => 'required|string|max:255',
-    //         'lastName' => 'required|string|max:255',
-    //         'nationalId' => 'required|numeric|digits:8|unique:users,national_id',
-    //         'workId' => 'required|string|max:15|unique:users,work_id',
-    //         'email' => 'required|email|unique:users,email',
-    //         'phone' => 'required|string|max:15',
-    //         'password' => 'required|string|min:8',
-    //     ]);
-
-    //     $validator->setAttributeNames($customAttributes);
-
-    //     if ($validator->fails()) {
-    //         return redirect()->back()->withErrors($validator)->withInput();
-    //     }
-    //     $otp = new GenerateOTPService;
-    //    $otp = $otp->getOTP();
-    //            $user = User::create([
-    //         'first_name' => $request->input('firstName'),
-    //         'last_name' => $request->input('lastName'),
-    //         'national_id' => $request->input('nationalId'),
-    //         'work_id' => $request->input('workId'),
-    //         'email' => $request->input('email'),
-    //         'phone' => $request->input('phone'),
-    //         'role' => $request->input('role'),
-    //         'verified' => $otp,
-    //         'password' => bcrypt($request->input('password')),
-    //     ]);
-
-    //     event(new UserWithOTPCreated($request->input('email'),$otp, 'OTP-verification'));   
-    //     Auth::login($user);
-    //     return redirect()->route('verify.email.form');
-       
-    // }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(user $user)
     {
        
@@ -220,6 +171,9 @@ class UserController extends Controller
         $user->phone = $request->input('phone');
         $user->role = $request->input('role');
 
+        if($user->save()){
+            event(new ActivityProcessed(auth()->user()->id, 'Updated user ( '.$user->first_name.' '.$user->last_name.' ) '));
+        }
         return $user->save();
         
     }
@@ -258,8 +212,10 @@ class UserController extends Controller
                 $user->phone = $request->input('phone');
                 
                 if($user->save()){
+                    event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) updated self'));
                     return redirect('/'.$role)->with('success', ''.$userName.' was successifuly updated ');
                 }else{
+                    event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) failed to updated self'));
                     return redirect('/'.$role)->with('error', 'Faild to update profile');
                 }
                 
@@ -276,11 +232,14 @@ class UserController extends Controller
         $user = User::where('id',$id)->firstOrFail();
         $userName = $user['first_name']." ".$user['last_name'];
         if(auth()->user()->id == $id){
+            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) tried to delete self while logged in'));
             return redirect('/user/list')->with('error',"ERROR!! As a system administrator, you can't exit from the system this way") ;
         }
         if($user->delete()){
+            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) was removed from the system'));
             return redirect('/user/list')->with('success', 'User '.$userName.' was successifuly removed');
         }else{
+            event(new ActivityProcessed(auth()->user()->id, 'Failed to remove user ( '.$userName.' )'));
             return redirect('/user/list')->with('error',"Error occured when removing '.$id.' from the system") ;
         }
     }

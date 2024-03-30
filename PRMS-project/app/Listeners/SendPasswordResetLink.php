@@ -38,10 +38,9 @@ class SendPasswordResetLink
     }
     protected function handleEmailError(\Exception $e)
         {
-            
             // Log the error
             Log::error('Email sending failed: ' . $e->getMessage());
-            if($e->getCode() == 0){
+            if(!$e->getCode()){
                 return "There was no connection. Please reconnect and try again";
             }else{
                 return "An error occured. Please try again later";

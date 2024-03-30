@@ -176,11 +176,7 @@
             </a>
             <a href="" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-info">
               <i class="fs-5 p-2 mt-1 fa fa-fingerprint"></i>
-              <p class="mb-0 fs-4">Security</p>
-            </a>
-            <a href="javascript:void(0)" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-warning">
-              <i class="fs-5 p-2 mt-1 fa fa-magnifying-glass-chart"></i>
-              <p class="mb-0 fs-4">Log Activities</p>
+              <p class="mb-0 fs-4">Logged Activies</p>
             </a>
             <a href="javascript:void(0)" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-danger">
               <i class="fs-5 p-2 mt-1 fa fa-file-invoice"></i>
