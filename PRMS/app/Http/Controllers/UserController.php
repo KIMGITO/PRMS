@@ -85,13 +85,17 @@ class UserController extends Controller
             'password' => bcrypt($request->input('password')),
         ]);
         if(!auth()->user()){
-            $user_id = 1;
+            $user_id = User::first()->id;
         }else{
             $user_id = auth()->user()->id;
         }
         event(new UserWithOTPCreated($request->input('email'), $otp, 'OTP- Verification'));
         event(new ActivityProcessed($user_id, 'A new user named '.$user->first_name.' '.$user->last_name.' was created.'));
-        return redirect()->route('verify.email.form');
+        if(!auth()->user()){
+            return redirect()->route('index');
+        }else{
+            return redirect()->route('verify.email.form');
+        }
     }
 
     

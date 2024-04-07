@@ -16,13 +16,17 @@ class ActivityProcessed
 
     public $user;
     public $description;
+    public $action;
+    public $status;
     /**
      * Create a new event instance.
      */
-    public function __construct($user, $description)
+    public function __construct($user, $description, $action, $status)
     {
         $this->user = $user;
         $this->description = $description;
+        $this->action = $action;
+        $this->status = $status;
     }
 
     /**

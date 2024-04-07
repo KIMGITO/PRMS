@@ -35,9 +35,9 @@ Route::get('/reset/password/{token}',[AuthController::class,'resetPasswordForm']
 route::post('/reset/new/password/{token}', [AuthController::class,'resetPassword'])->name('reset.password');
 
 Route::middleware(['verified'])->group(function(){
-    Route::get('/email/verify',[AuthController::Class,'verifyEmailForm'])->name('verify.email.form');
+    Route::get('/email/verify',[AuthController::class,'verifyEmailForm'])->name('verify.email.form');
     Route::post('/email/verifyEmail',[AuthController::class,'verifyOTP'])->name('verify.otp');
-    Route::get('/otp/resend',[AuthController::Class,'resendOTP'])->name('resend.otp');
+    Route::get('/otp/resend',[AuthController::class,'resendOTP'])->name('resend.otp');
 });
 
 //Auth middleware group

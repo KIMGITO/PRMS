@@ -25,9 +25,10 @@ class RegisterNewActivity
     {
         $user = $event->user;
         $description = $event->description;
+        $action = $event->action;
+        $status = $event->status;
         $addActivity = new LoggedActivityController;
 
-        $store = $addActivity->store($user, $description);
-
+        $store = $addActivity->store($user, $description, $action, $status);
     }
 }
