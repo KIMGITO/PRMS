@@ -90,7 +90,7 @@ class UserController extends Controller
             $user_id = auth()->user()->id;
         }
         event(new UserWithOTPCreated($request->input('email'), $otp, 'OTP- Verification'));
-        event(new ActivityProcessed($user_id, 'A new user named '.$user->first_name.' '.$user->last_name.' was created.'));
+        // event(new ActivityProcessed($user_id, 'A new user ('.$user->first_name.' '.$user->last_name.') was created.','create', true));
         if(!auth()->user()){
             return redirect()->route('index');
         }else{
@@ -176,7 +176,9 @@ class UserController extends Controller
         $user->role = $request->input('role');
 
         if($user->save()){
-            event(new ActivityProcessed(auth()->user()->id, 'Updated user ( '.$user->first_name.' '.$user->last_name.' ) '));
+            event(new ActivityProcessed(auth()->user()->id, '['.auth()->user()->first_name.'] updated user ( '.$user->first_name.' '.$user->last_name.' ) ','update', true));
+        }else{
+            event(new ActivityProcessed(auth()->user()->id, '['.auth()->user()->first_name.'] Failed to update user ( '.$user->first_name.' '.$user->last_name.' ) ','update', false));
         }
         return $user->save();
         
@@ -216,11 +218,11 @@ class UserController extends Controller
                 $user->phone = $request->input('phone');
                 
                 if($user->save()){
-                    event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) updated self'));
+                    event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) updated self','update',true));
                     return redirect('/'.$role)->with('success', ''.$userName.' was successifuly updated ');
                 }else{
-                    event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) failed to updated self'));
-                    return redirect('/'.$role)->with('error', 'Faild to update profile');
+                    event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) failed to updated self','update',false));
+                    return redirect('/'.$role)->with('err['.auth()->user()->first_name.']or', 'Faild to update profile');
                 }
                 
             }
@@ -236,15 +238,16 @@ class UserController extends Controller
         $user = User::where('id',$id)->firstOrFail();
         $userName = $user['first_name']." ".$user['last_name'];
         if(auth()->user()->id == $id){
-            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) tried to delete self while logged in'));
+            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) tried to delete self while logged in','try',false));
             return redirect('/user/list')->with('error',"ERROR!! As a system administrator, you can't exit from the system this way") ;
         }
         if($user->delete()){
-            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) was removed from the system'));
+            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$userName.' ) was removed from the system','delete',true));
             return redirect('/user/list')->with('success', 'User '.$userName.' was successifuly removed');
         }else{
-            event(new ActivityProcessed(auth()->user()->id, 'Failed to remove user ( '.$userName.' )'));
+            event(new ActivityProcessed(auth()->user()->id, 'Failed to remove user ( '.$userName.' )','delete',false));
             return redirect('/user/list')->with('error',"Error occured when removing '.$id.' from the system") ;
         }
+        
     }
 }

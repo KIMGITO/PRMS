@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Casetype;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Events\ActivityProcessed;
 
 
 class CasetypeController extends Controller
@@ -16,7 +17,7 @@ class CasetypeController extends Controller
     {
         //
         $types = Casetype::all();
-        return view('system.config.case-types',['types'=>$types]);
+        return view('system.config.case-types', ['types' => $types]);
     }
 
     /**
@@ -34,30 +35,32 @@ class CasetypeController extends Controller
     public function store(Request $request)
     {
         //
-        $validator = Validator::make($request->all(),[
-            'initials'=>'required|unique:casetypes,initials',
-            'caseType'=>'required|unique:casetypes,case_type',
-            'duration'=>'required|integer'
-        ],[
-            'required'=>':attribute required.',
-            'integer'=>':attribute must be a number.',
-            'unique'=>':attribute already exists.',
+        $validator = Validator::make($request->all(), [
+            'initials' => 'required|unique:casetypes,initials',
+            'caseType' => 'required|unique:casetypes,case_type',
+            'duration' => 'required|integer'
+        ], [
+            'required' => ':attribute required.',
+            'integer' => ':attribute must be a number.',
+            'unique' => ':attribute already exists.',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
 
-        $case = New Casetype();
+        $case = new Casetype();
         $case->initials = $request->input('initials');
         $case->case_type = $request->input('caseType');
         $case->duration = $request->input('duration');
 
-        if($case->save()){
-            return  redirect()->back()->with('success','New CaseType ,'.$request->input('caseType').' Was added.');
-        }else{
-            return  redirect()->back()->with('error','Error occured when adding,'.$request->input('caseType'));
+        if ($case->save()) {
+            event(new ActivityProcessed(auth()->user()->id, 'User ( ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . ' ) created a new casetype  ', 'create', true));
+            return  redirect()->back()->with('success', 'New CaseType ,' . $request->input('caseType') . ' Was added.');
+        } else {
+            event(new ActivityProcessed(auth()->user()->id, 'Failed  to  created a new casetype  ', 'create', false));
+            return  redirect()->back()->with('error', 'Error occured when adding,' . $request->input('caseType'));
         }
     }
 

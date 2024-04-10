@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use App\Events\ActivityProcessed;
+
 class AuthController extends Controller
 {
    protected $otp;
@@ -35,8 +37,11 @@ class AuthController extends Controller
             $user = auth()->user();
             if($user->role == 'admin'){
                 return redirect()->intended('/admin')->with('success','Welcome '.$user->first_name);
+                event(new ActivityProcessed(auth()->user()->id, 'Admin ( '.$user->first_name.' '.$user->last_name.' ) logged in','login', true));
             }else{
                 return redirect()->intended('/user')->with('success','Welcome '.$user->first_name);
+                event(new ActivityProcessed(auth()->user()->id, 'User ( '.$user->first_name.' '.$user->last_name.' ) logged in','login', true));
+
             }
             
 
@@ -68,9 +73,13 @@ class AuthController extends Controller
             $user = User::where(['id'=>auth()->user()->id])->firstOrFail();
             $user->verified = true;
             $user->save();
+            event(new ActivityProcessed(auth()->user()->id, 'Email for user ( '.$user->first_name.' '.$user->last_name.' ) verified','verifie', true));
             return redirect()->intended('/'.$user->role)->with('success',$user->first_name.' Your Email was verified successffuly. Welcome');
+
         }else{
+            event(new ActivityProcessed(auth()->user()->id, 'Failed to verifiy email for ( '.$user->first_name.' '.$user->last_name.' )','verify', false));
             return redirect()->back()->with(['error'=>'OTP Missmatched','resend'=>true]);
+
         }
     }
 
@@ -80,10 +89,12 @@ class AuthController extends Controller
         $user->verified = $otp;
         $user->save();
         event(new UserWithOTPCreated($user->email,$otp, 'OTP-verification'));
+        event(new ActivityProcessed(auth()->user()->id, 'OTP verification sent for ( '.$user->first_name.' '.$user->last_name.' ) ','otp-sent', true));
         return redirect()->route('verify.email.form')->with('success','A new OTP has been sent.');
     }
 
     public function logout(){
+        event(new ActivityProcessed(auth()->user()->id, 'User ( '.auth()->user()->first_name.' '.auth()->user()->last_name.' ) logged out','logout', true));
         Auth::logout();
         return redirect('/');
     }
@@ -116,7 +127,7 @@ class AuthController extends Controller
                     if($availableToken){
                         $availableToken->where(['email'=>$email])->delete();
                     }
-                    if(PasswordResetToken::insert(['email'=>$email,'token'=>$token,'created_at'=>Carbon::now()])){
+                    if(PasswordResetToken::insert(['email'=>$email,'token'=>$token])){
                         return redirect()->route('reset.password.email.sent');
                     }
                 }
@@ -150,8 +161,10 @@ class AuthController extends Controller
             if(auth()->user() && auth()->user()->email == $email){
                 Auth::logout();
             }
+            event(new ActivityProcessed(auth()->user()->id, 'User ( '.$user->first_name.' '.$user->last_name.' ) updated password','update', true));
             return redirect('/')->with('success','Password successffully updated');
         }else{
+            event(new ActivityProcessed(auth()->user()->id, 'Failed to update password for ( '.$user->first_name.' '.$user->last_name.' ) ','update', false));
             return redirect()->back()->with('error','Failed to update password. Try again');
         }
 

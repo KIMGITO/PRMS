@@ -10,5 +10,5 @@ class LoggedActivities extends Model
     use HasFactory;
 
     protected $table = 'logged_activities';
-    protected $fillable = ['user_id','description','type', 'status'];
+    protected $fillable = ['user_id','description','action', 'status','created_at'];
 }

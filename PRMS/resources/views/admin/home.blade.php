@@ -45,20 +45,36 @@
         <div class="col-lg-4">
           <div class="row">
             <div class="col-lg-12">
-              <!-- Yearly Breakup -->
+            {{--  CAse types --}}
               <div class=" overflow-hidden">
                 <div class="card-body p-4">
-                  <h5 class="card-title mb-9 fw-semibold">Yearly Breakup</h5>
+                  <h5 class="card-title mb-9 fw-semibold">System Assets</h5>
                   <div class="row align-items-center">
                     <div class="col-8">
-                      <h4 class="fw-semibold mb-3">$36,358</h4>
+                      <h4 class="fw-semibold mb-3">2,000 Records</h4>
+                      <div class="d-flex align-items-center mb-3">
+                        <span
+                          class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
+                          
+                        </span>
+                        <p class="text-dark me-1 fs-3 mb-0">5</p>
+                        <p class="fs-3 mb-0">Departments</p>
+                      </div>
                       <div class="d-flex align-items-center mb-3">
                         <span
                           class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
                           <i class="ti ti-arrow-up-left text-success"></i>
                         </span>
-                        <p class="text-dark me-1 fs-3 mb-0">+9%</p>
-                        <p class="fs-3 mb-0">last year</p>
+                        <p class="text-dark me-1 fs-3 mb-0">5</p>
+                        <p class="fs-3 mb-0">Departments</p>
+                      </div>
+                      <div class="d-flex align-items-center mb-3">
+                        <span
+                          class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
+                          <i class="ti ti-arrow-up-left text-success"></i>
+                        </span>
+                        <p class="text-dark me-1 fs-3 mb-0">5</p>
+                        <p class="fs-3 mb-0">Departments</p>
                       </div>
                       <div class="d-flex align-items-center">
                         <div class="me-4">
@@ -73,7 +89,7 @@
                     </div>
                     <div class="col-4">
                       <div class="d-flex justify-content-center">
-                        <div id="breakup"></div>
+                        <div id="yearly"></div>
                       </div>
                     </div>
                   </div>

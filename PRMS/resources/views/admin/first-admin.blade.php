@@ -36,7 +36,7 @@
     
                     <p class="text-center fs-5">System Administrator </p>
                     <div class="alert alert-info">
-                        <p class="h-2 fw-bolder text-danger">NOTE!! NOTE!! NOTE!!</p>
+                        <p class="h-2 fw-bolder text-danger">NOTE!</p>
                         <p>The system has detected that no existing users are present.
                              As a result, this page is being displayed to create an Admin account.
                                 <span class="text-danger fw-bold">Please note that this form should 
@@ -47,8 +47,7 @@
                                     Please fill out the  form below to create the Admin account and proceed 
                                     to PAPER RECORDS MANAGEMENT SYSTEM.    
                                 </span>
-                            </p>
-
+                        </p>
                     </div>
                     <form method="POST" action="{{ route('store.first.admin')}}">
                       @csrf
