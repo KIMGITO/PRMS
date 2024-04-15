@@ -6,13 +6,15 @@ $(function () {
   // =====================================
   var chart = {
     series: [
-      { name: "Earnings this month:", data: [355, 390, 300, 350, 390, 180, 355, 390] },
-      { name: "Expense this month:", data: [280, 250, 325, 215, 250, 310, 280, 250] },
+      { name: "Earnings this month:", data: [355] },
+      { name: "Earnings this month:", data: [355] },
+      { name: "Earnings this month:", data: [355] },
+      { name: "Earnings this month:", data: [355] },
     ],
 
     chart: {
       type: "bar",
-      height: 345,
+      height: 500,
       offsetX: -15,
       toolbar: { show: true },
       foreColor: "#adb0bb",
@@ -27,13 +29,13 @@ $(function () {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "35%",
+        columnWidth: "50%",
         borderRadius: [6],
         borderRadiusApplication: 'end',
         borderRadiusWhenStacked: 'all'
       },
     },
-    markers: { size: 0 },
+    markers: { size: 10 },
 
     dataLabels: {
       enabled: false,
@@ -57,7 +59,7 @@ $(function () {
 
     xaxis: {
       type: "category",
-      categories: ["16/08", "17/08", "18/08", "19/08", "20/08", "21/08", "22/08", "23/08"],
+      categories: ["succ", "succ", "succ", "succ", "succ", "succ", "succ", "23/08"],
       labels: {
         style: { cssClass: "grey--text lighten-2--text fill-color" },
       },
@@ -67,7 +69,7 @@ $(function () {
     yaxis: {
       show: true,
       min: 0,
-      max: 400,
+      max: 700,
       tickAmount: 4,
       labels: {
         style: {

@@ -16,48 +16,63 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Events\ActivityProcessed;
+use App\Models\Casetype;
+use App\Services\GenerateColors;
 
 class AuthController extends Controller
 {
    protected $otp;
+   protected $colors;
 
-   public function __construct(GenerateOTPService $otp){
+   public function __construct(GenerateOTPService $otp, GenerateColors $colors){
         $this->otp = $otp;
+        $this->colors = $colors;
     }
 
+
     public function login(Request $request)
-    {
-        $email = $request->input('email');
-        $user = User::where('email',$email)->exists();
-        $credentials = $request->only('email', 'password');
+{
+    $email = $request->input('email');
+    $user = User::where('email', $email)->exists();
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            // Authentication passed...
-            
-            $user = auth()->user();
-            if($user->role == 'admin'){
-                return redirect()->intended('/admin')->with('success','Welcome '.$user->first_name);
-                event(new ActivityProcessed(auth()->user()->id, 'Admin ( '.$user->first_name.' '.$user->last_name.' ) logged in','login', true));
-            }else{
-                return redirect()->intended('/user')->with('success','Welcome '.$user->first_name);
-                event(new ActivityProcessed(auth()->user()->id, 'User ( '.$user->first_name.' '.$user->last_name.' ) logged in','login', true));
+    if (Auth::attempt($credentials)) {
+        // Authentication passed...
 
-            }
-            
-
+        $user = $request->user();
+        if ($user->role == 'admin') {
+            return redirect()->intended('/admin');
         } else {
-            // Authentication failed...
-            if(empty($user)){
-                if(empty($email)){
-                    return redirect('/')->with('error', 'Email and password are required');
-                }
-                return redirect('/')->with('error', 'User with that email does not exist');
-            }else{
-                return redirect('/')->with('error', 'Account password did not match');
-            }
-             
-            
+            return redirect()->intended('/user');
         }
+
+    } else {
+        // Authentication failed...
+        if (empty($user)) {
+            if (empty($email)) {
+                return redirect('/')->with('error', 'Email and password are required');
+            }
+            return redirect('/')->with('error', 'User with that email does not exist');
+        } else {
+            return redirect('/')->with('error', 'Account password did not match');
+        }
+
+    }
+}
+
+    public function adminDash(){
+        $names = Casetype::all();
+        $colors = $this->colors->getVisualization($names);
+        $data = [];
+        foreach($names as $name){
+            $data[] = $name->initials;
+        }
+        return view('admin.home', ['type'=>$data,'colors'=>$colors,'name'=>'Case Types'])->with('success','Welcome '.auth()->user()->first_name);
+    }
+
+    function userDash() {
+        $types = Casetype::all();
+        return view('user.home', ['type'=>$types])->with('success','Welcome '.auth()->user()->first_name);
     }
 
     public function verifyEmailForm()

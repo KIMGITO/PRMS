@@ -50,7 +50,7 @@
                 <div class="card-body p-4">
                   <h5 class="card-title mb-9 fw-semibold">System Assets</h5>
                   <div class="row align-items-center">
-                    <div class="col-8">
+                    {{-- <div class="col-8">
                       <h4 class="fw-semibold mb-3">2,000 Records</h4>
                       <div class="d-flex align-items-center mb-3">
                         <span
@@ -86,17 +86,24 @@
                           <span class="fs-2">2023</span>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-4">
-                      <div class="d-flex justify-content-center">
-                        <div id="yearly"></div>
-                      </div>
-                    </div>
+                    </div> --}}
+                    
+                    <script>
+                      var colors = @json($colors)
+                    </script>
+                    <script>
+                      var caseTypes = @json($type)
+                    </script>
+                    <script>
+                      var chart_name = @json($name)
+                    </script>
+                    <div id="earnings" class="mt-5"></div>
+                    
                   </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-12">
+            {{-- <div class="col-lg-12">
               <!-- Monthly Earnings -->
               <div class="">
                 <div class="card-body">
@@ -125,7 +132,7 @@
                 </div>
                 <div id="earning"></div>
               </div>
-            </div>
+            </div> --}}
           </div>
         </div>
       </div>

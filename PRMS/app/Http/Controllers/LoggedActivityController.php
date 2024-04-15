@@ -21,8 +21,8 @@ class LoggedActivityController extends Controller
      */
     public function store($user, $description, $type, bool $status)
     {
-       $actvity = LoggedActivities::create(['user_id'=>$user,'description'=>$description,'created_at'=>Carbon::now()]);
-       return $actvity;
+    //    $actvity = LoggedActivities::create(['user_id'=>$user,'description'=>$description,'action'=>$type,'status'=>$status]);
+    //    return $actvity;
     }
 
     /**

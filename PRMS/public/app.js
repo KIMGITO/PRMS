@@ -347,4 +347,74 @@ function displayError(target, message) {
 
 
  
+///////////////////////////////////////////////////////////////////////////////////////////
 
+
+var options = {
+  series: [1,5,7,8,20],
+  labels: caseTypes,
+  colors: colors,
+  chart: {
+    type: 'pie', 
+    height: 350
+  },
+  title: {
+    text: chart_name
+  },
+  responsive: [{
+    breakpoint: 100,
+    options: {
+      chart: {
+        width: 300
+      },
+      legend: {
+        position: 'bottom'
+      }
+    }
+  }],
+  dataLabels: {
+    enabled: false 
+  },
+  plotOptions: {
+    pie: {
+      donut: {
+        labels: {
+          show: true,
+          name: {
+            show: true,
+            fontSize: '22px',
+            fontFamily: 'Helvetica, Arial, sans-serif',
+            fontWeight: 600,
+            color: undefined,
+            offsetY: -10
+          },
+          value: {
+            show: true,
+            fontSize: '16px',
+            fontFamily: 'Helvetica, Arial, sans-serif',
+            fontWeight: 400,
+            color: undefined,
+            offsetY: 16,
+            formatter: function (val) {
+              return val + '%'
+            }
+          },
+          total: {
+            show: true,
+            label: 'Total Count',
+            color: '#373d3f',
+            formatter: function (w) {
+              return w.globals.seriesTotals.reduce((a, b) => {
+                return a + b
+              }, 0) 
+            }
+          }
+        },size : '50%'
+      }
+    }
+  }
+};
+
+// Initialize the donut chart
+var chart = new ApexCharts(document.querySelector("#earnings"), options);
+chart.render();

@@ -43,13 +43,13 @@ Route::middleware(['verified'])->group(function(){
 //Auth middleware group
 Route::middleware(['user.auth','verified'])->group(function(){
     Route::get('/', function(){return view('index');})->name('index');
-    Route::get('/user', function(){ return view('user/home'); })->name('user');
+    Route::get('/user', [AuthController::class,'userDash'])->name('user');
     Route::get('/logOut',[AuthController::class,'logout'])->name('logout');
 });
 
 //Admin routes
 Route::middleware([ 'user.auth','admin','verified'])->group(function () {
-    Route::get('/admin', function(){return view('admin.home');})->name('admin');
+    Route::get('/admin', [AuthController::class,'adminDash'])->name('admin');
     Route::get('/user/list', [UserController::class,'index'])->name('user.list');
     Route::get('/user/new', [UserController::class,'create'])->name('create.user.form');
     Route::get('/user/{id}', [UserController::class,'edit'])->name('edit.user.form');
