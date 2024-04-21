@@ -22,6 +22,13 @@
                                 @php
                                     $id = Crypt::encrypt($judge['id']);
                                 @endphp
+
+                                <form method="POST" id="form-delete-judge" action="{{ route('destroy.judge', ['id' => $id])}}">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                
+
                                 <form method="POST" action="{{ route('update.judge', ['id' => $id]) }}">
                                     @csrf
                                     @method('PUT')
@@ -61,9 +68,16 @@
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="row justify-content-end mt-2">
-                                                <div class="d-flex align-items-center col-md-3 col-lg-2">
-                                                    <button type="submit" class="btn btn-primary btn-sm"><span>Update</span></button>
+                                            <div class="row justify-content-between mt-2">
+                                                <div class="col-md-3 col-lg-2">
+                                                    <div id="deleteButton" title="Delete"
+                                                        onclick="confirmDelete('delete-judge','judge')"
+                                                        class="btn btn-danger btn-sm col-12 py-1">
+                                                        <span>Delete <i class="fa fa-trash"></i> </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 col-lg-2">
+                                                    <button type="submit" title="Update" class="btn btn-primary btn-sm col-12 py-1"><span>Update</span></button>
                                                 </div>
                                             </div>
                                         </div>

@@ -22,6 +22,13 @@
                                 @php
                                     $id = Crypt::encrypt($data['id']);
                                 @endphp
+
+                                <form method="POST" action="{{ route('destroy.court',['id'=> $id]) }}" id="form-delete-court">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                
+
                                 <form method="POST" action="{{ route('update.court', ['id' => $id]) }}">
                                     @csrf
                                     @method('PUT')
@@ -41,10 +48,18 @@
                                                     <div class="text-danger small">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-lg-3 mt-2">
-                                                <button type="submit" class="btn btn-primary btn-sm"><span>Update</span></button>
+                                            <div class="row justify-content-between">
+                                                <div class="col-md-3 col-lg-2">
+                                                    <a id="deleteButton" title="Delete"
+                                                        onclick="confirmDelete('delete-court','court')"
+                                                        class="btn btn-danger btn-sm col-12 py-1">
+                                                        <span>Delete <i class="fa fa-trash"></i> </span>
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-3 col-lg-2">
+                                                    <button type="submit" title="Update" class="btn btn-primary btn-sm col-12 py-1"><span>Update</span></button>
+                                                </div>
                                             </div>
-                                        </div>
                                     </div>
                                 </form>
                             </div>

@@ -20,8 +20,14 @@
                                 @php
                                     $id = Crypt::encrypt($data['id']);
                                 @endphp
+
                                 <p class="text-center fs-5">Configurations <i class="fa fa-cogs" aria-hidden="true"></i></p>
                                 @include('system.config.config-header')
+
+                                <form class="d-none" id="form-delete-purpose" method="POST" action="{{ route('destroy.purpose',['id'=>$id]) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
 
                                 <form method="POST" action="{{ route('update.purpose', ['id' => $id]) }}">
                                     @csrf
@@ -70,9 +76,13 @@
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="row justify-content-end mt-2">
-                                                <div class="d-flex align-items-center col-12">
-                                                    <button type="submit" class="btn btn-primary col-12 btn-sm"><span>Update</span>
+                                            <div class="row justify-content-between mt-2">
+                                                <div class="col-md-6 col-lg-4">
+                                                    <div id="deleteButton" title="Delete" onclick="confirmDelete('delete-purpose','purpose')" 
+                                                    class="btn btn-danger btn-sm py-1 px-2"><span> Delete <i class="fa fa-trash" aria-hidden="true"></i></span></div>
+                                                </div>
+                                                <div class="col-md-6 col-lg-4">
+                                                    <button type="submit" class="btn btn-success btn-sm col-12 py-1"><span>Update</span>
                                                     </button>
                                                 </div>
                                             </div>

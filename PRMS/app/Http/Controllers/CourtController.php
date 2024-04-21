@@ -71,28 +71,32 @@ class CourtController extends Controller
     }
 
     public function update(Request $request, $id){
-        try{
-            $id = decrypt($id);
-        }catch(\Throwable $e){
-            abort (404);
-        }
-
-        $court = Court::find($id);
-        $court->name = $request->input('name');
-        $activityDescription = 'Updated court: '. $court->name;
-        $activityAction = 'update';
-        $activityStatus = true;
-        if($court->save()){
-            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
-            return  redirect()->route('config.court')->with('success', 'Court '. $court->name.' was updated.');
-        }else{
-            $activityDescription = 'Failed to update court: '. $court->name;
-            $activityAction = 'update';
-            $activityStatus = false;
-            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
-            return  redirect()->back()->with('error', 'Failed to update court '. $court->name);
-        }
+    try{
+        $id = decrypt($id);
+    }catch(\Throwable $e){
+        abort (404);
     }
+
+    $court = Court::find($id);
+    $originalName = $court->name; // Get the original name before updating
+
+    if ($originalName !== $request->input('name')) {
+        $court->name = $request->input('name');
+        $activityDescription = 'Updated court: ' . $originalName . ' to ' . $request->input('name');
+        $activityAction = 'update';
+        $activityStatus = $court->save();
+
+        if ($activityStatus) {
+            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
+            return redirect()->route('config.court')->with('success', 'Court ' . $originalName . ' was updated to ' . $request->input('name'));
+        } else {
+            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, false));
+            return redirect()->back()->with('error', 'Failed to update court ' . $originalName);
+        }
+    } else {
+        return redirect()->route('config.court')->with('info', 'No changes were made to the Court.');
+    }
+}
 
     public function destroy($id){
         try{
@@ -106,7 +110,7 @@ class CourtController extends Controller
             $activityAction = 'delete';
             $activityStatus = true;
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
-            return  redirect()->back()->with('success', 'Court '. $court->name.'was deleted.');
+            return  redirect()->route('config.court')->with('success', 'Court '. $court->name.'was deleted.');
         }else{
             $activityDescription = 'Failed to delete court';
             $activityAction = 'delete';

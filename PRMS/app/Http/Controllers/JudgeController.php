@@ -70,53 +70,56 @@ class JudgeController extends Controller
             return view('system.config.judge-edit',['judge'=>$judge]);
     }
 
-    public function update(Request $request, $id){    
-        try{
-            $id = decrypt($id);
-        }catch(\Throwable $e){
-            abort(404);
-        }
-
-        $validator = Validator::make(request()->all(),[
-            'name' =>'required|string|unique:judges,name,'.$id,
-            'gender'=>'required'
-        ],[
-            'unique'=>'A judge with similar name exists, please try to differentiate them.'
-        ]);
-
-        if($validator->fails()){
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $judge = Judge::where('id', $id)->firstOrFail();
-        $name = $judge->name;
-        $gender = $judge->gender;
-        $judge->name = request()->input('name');
-        $judge->gender = request()->input('gender');
-        if($judge->save()){
-            $activityDescription = '';
-            $activityDescription1 = '';
-            $activityDescription2 = '';
-
-            if(request()->input('name') != $name){
-                $activityDescription1 = 'Updated judge name from '.$name.' to '.request()->input('name');
-            }
-            if(request()->input('gender') != $gender){
-                $activityDescription2 = 'Updated judge gender from '.$gender.' to '.request()->input('gender');
-            }
-
-            $activityDescription = $activityDescription1.' '.$activityDescription2;
-            $activityAction = 'update';
-            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
-            return  redirect()->route('config.judge')->with('success', 'Judge '. $judge->name.' was updated.');
-        }else{
-            $activityDescription = 'Failed to update judge';
-            $activityAction = 'update';
-            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, false));
-            return  redirect()->back()->with('error', 'Failed to update judge '. $judge->name);
-        }
-
+public function update(Request $request, $id){    
+    try{
+        $id = decrypt($id);
+    }catch(\Throwable $e){
+        abort(404);
     }
+
+    $validator = Validator::make(request()->all(),[
+        'name' =>'required|string|unique:judges,name,'.$id,
+        'gender'=>'required'
+    ],[
+        'unique'=>'A judge with similar name exists, please try to differentiate them.'
+    ]);
+
+    if($validator->fails()){
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    $judge = Judge::where('id', $id)->firstOrFail();
+    $originalName = $judge->name;
+    $originalGender = $judge->gender;
+
+    $judge->name = request()->input('name');
+    $judge->gender = request()->input('gender');
+
+    if($judge->isDirty()) {
+        $activityDescription = 'Updated judge:';
+        $activityDetails = [];
+
+        if($originalName !== $judge->name) {
+            $activityDetails[] = 'name from ' . $originalName . ' to ' . $judge->name;
+        }
+
+        if($originalGender !== $judge->gender) {
+            $activityDetails[] = 'gender from ' . $originalGender . ' to ' . $judge->gender;
+        }
+
+        $activityDescription .= ' ' . implode(', ', $activityDetails);
+        $activityAction = 'update';
+        event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
+    } else {
+        return redirect()->route('config.judge')->with('info', 'No changes were made to the Judge.');
+    }
+
+    if($judge->save()){
+        return  redirect()->route('config.judge')->with('success', 'Judge '. $judge->name.' was updated.');
+    } else {
+        return  redirect()->back()->with('error', 'Failed to update judge '. $judge->name);
+    }
+}
 
     public function destroy($id){
         try{
@@ -130,7 +133,7 @@ class JudgeController extends Controller
             $activityDescription = 'Deleted a judge';
             $activityAction = 'delete';
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
-            return  redirect()->back()->with('success', 'Judge '. $judge->name.'was deleted.');
+            return  redirect()->route('config.judge')->with('success', 'Judge '. $judge->name.'was deleted.');
         }else{
             $activityDescription = 'Failed to delete judge';
             $activityAction = 'delete';

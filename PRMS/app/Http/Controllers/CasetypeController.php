@@ -126,7 +126,7 @@ class CasetypeController extends Controller
                 $activityAction = 'delete';
                 $activityStatus = true;
                 event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
-                return  redirect()->back()->with('success', 'CaseType '. $case->case_type.'was deleted.');
+                return  redirect()->route('config.caseType')->with('success', 'CaseType '. $case->case_type.'was deleted.');
             }else{
                 $activityDescription = 'Failed to delete casetype';
                 $activityAction = 'delete';

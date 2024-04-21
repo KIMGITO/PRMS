@@ -63,7 +63,7 @@ class PurposeController extends Controller
             $activityDescription = 'Deleted a purpose';
             $activityAction = 'delete';
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
-            return  redirect()->back()->with('success', 'Purpose '. $purpose->purpose.'was deleted.');
+            return  redirect()->route('config.purpose')->with('success', 'Purpose '. $purpose->purpose.'was deleted.');
         } else{
             $activityDescription = 'Failed to delete purpose';
             $activityAction = 'delete';
@@ -85,36 +85,60 @@ class PurposeController extends Controller
 
 
     public function update(Request $request, $id)
-    {
-        try{
-            $id = decrypt($id);
-        }catch(\Throwable $e){
-            abort(404);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'purpose' =>'required|string|max:50|unique:purposes,purpose,'.$id,
-           'supervision' => 'required',
-            'description' => 'required|max:250'
-        ], [
-            'description.required' => 'Give a simple explanation of the Request Purpose.'
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $reason = Purpose::find($id);
-        $reason->purpose = $request->input('purpose');
-        $reason->supervised = $request->input('supervision');
-        $reason->description = $request->input('description');
-        if($reason->save()){
-            $activityDescription = 'Updated a new activity description';
-            $activityAction = 'update';
-            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
-            return  redirect()->route('config.purpose')->with('success', 'Purpose '. $reason->purpose.' was updated.');
-        }
-        
+{
+    try{
+        $id = decrypt($id);
+    }catch(\Throwable $e){
+        abort(404);
     }
+
+    $validator = Validator::make($request->all(), [
+        'purpose' =>'required|string|max:50|unique:purposes,purpose,'.$id,
+        'supervision' => 'required',
+        'description' => 'required|max:250'
+    ], [
+        'description.required' => 'Give a simple explanation of the Request Purpose.'
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    $reason = Purpose::find($id);
+    $originalPurpose = $reason->purpose;
+    $originalSupervision = $reason->supervised;
+    $originalDescription = $reason->description;
+
+    $reason->purpose = $request->input('purpose');
+    $reason->supervised = $request->input('supervision');
+    $reason->description = $request->input('description');
+
+    if ($reason->isDirty()) {
+        $activityDescription = 'Updated purpose:';
+        $activityDetails = [];
+
+        if ($originalPurpose !== $reason->purpose) {
+            $activityDetails[] = 'purpose from ' . $originalPurpose . ' to ' . $reason->purpose;
+        }
+
+        if ($originalSupervision !== $reason->supervised) {
+            $activityDetails[] = 'supervision from ' . $originalSupervision . ' to ' . $reason->supervised;
+        }
+
+        if ($originalDescription !== $reason->description) {
+            $activityDetails[] = 'description';
+        }
+
+        $activityDescription .= ' ' . implode(', ', $activityDetails);
+        $activityAction = 'update';
+        event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
+    } else {
+        return redirect()->route('config.purpose')->with('info', 'No changes were made to the Purpose.');
+    }
+
+    if ($reason->save()) {
+        return redirect()->route('config.purpose')->with('success', 'Purpose '. $reason->purpose.' was updated.');
+    }
+}
     
 }
