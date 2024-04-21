@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Judge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Events\ActivityProcessed;
 
 class JudgeController extends Controller
 {
@@ -30,59 +31,39 @@ class JudgeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'name' =>'required|string|unique:judges,name',
-            'gender'=>'required'
-        ],[
-            'unique'=>'A judge with similar name exists, please try to differentiate them.'
-        ]);
+   
 
-        if($validator->fails()){
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+public function store(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'name' =>'required|string|unique:judges,name',
+        'gender'=>'required'
+    ],[
+        'unique'=>'A judge with similar name exists, please try to differentiate them.'
+    ]);
 
-        $judge = new Judge();
-        $judge->name = $request->input('name');
-        $judge->gender = $request->input('gender');
-
-        if($judge->save()){
-            return redirect()->back()->with('success','New Judge, '.$request->input('name').' was added.');
-        }else{
-            return redirect()->back()->with('error','Error when adding, '.$request->input('name').' to judges.');
-        }
+    if($validator->fails()){
+        return redirect()->back()->withErrors($validator)->withInput();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Judge $judge)
-    {
-        //
-    }
+    $judge = new Judge();
+    $judge->name = $request->input('name');
+    $judge->gender = $request->input('gender');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Judge $judge)
-    {
-        //
-    }
+    if($judge->save()){
+        $activityDescription = 'New Judge added: ' . $request->input('name');
+        $activityAction = 'add';
+        event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Judge $judge)
-    {
-        //
-    }
+        return redirect()->back()->with('success','New Judge, '.$request->input('name').' was added.');
+    }else{
+        $activityDescription = 'Error when adding judge: ' . $request->input('name');
+        $activityAction = 'error';
+        event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, false));
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Judge $judge)
-    {
-        //
+        return redirect()->back()->with('error','Error when adding, '.$request->input('name').' to judges.');
     }
+}
+
+    
 }
