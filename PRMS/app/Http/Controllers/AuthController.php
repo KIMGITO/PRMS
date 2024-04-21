@@ -106,7 +106,7 @@ class AuthController extends Controller
         public function logout()
         {
             $user = auth()->user();
-            $this->activity($user->id, 'User ( '.$user->first_name.' '.$user->last_name.' ) logged out','logout', true);
+            $this->activity($user->id, 'User logged out','logout', true);
             Auth::logout();
             return redirect('/');
         }   

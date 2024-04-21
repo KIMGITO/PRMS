@@ -82,15 +82,27 @@ Route::middleware(['user.auth','verified'])->group(function (){
     //case types
     Route::get('/config/caseTypes',[CasetypeController::class,'index'])->name('config.caseType');
     Route::post('/config/caseTypes/newCaseType',[CasetypeController::class,'store'])->name('store.new.caseType');
+    Route::delete('/config/caseType/{id}',[CasetypeController::class,'destroy'])->name('destroy.caseType');
+    Route::get('/config/edit/caseType/{id}', [CasetypeController::class, 'edit'])->name('update.caseType.form');
+    Route::put('/config/update/caseType/{id}', [CasetypeController::class, 'update'])->name('update.caseType');
     //courts
     Route::get('/config/court',[CourtController::class,'index'])->name('config.court');
     Route::post('/config/courts/newCourt',[CourtController::class,'store'])->name('store.new.court');
+    Route::delete('/config/court/{id}',[CourtController::class,'destroy'])->name('destroy.court');
+    Route::get('/config/edit/court/{id}', [CourtController::class, 'edit'])->name('update.court.form');
+    Route::put('/config/update/court/{id}', [CourtController::class, 'update'])->name('update.court');
     //judges
     Route::get('/config/judge',[JudgeController::class,'index'])->name('config.judge');
     Route::post('/config/judges/newJudge',[JudgeController::class,'store'])->name('store.new.judge');   
-    //judges
+    Route::delete('/config/destroy/judge/{id}',[JudgeController::class,'destroy'])->name('destroy.judge');
+    Route::get('/config/edit/judge/{id}',[JudgeController::class,'edit'])->name('update.judge.form');
+    Route::put('/config/update/judge/{id}',[JudgeController::class,'update'])->name('update.judge');
+    //purpose
     Route::get('/config/purpose',[PurposeController::class,'index'])->name('config.purpose');
     Route::post('/config/purpose/newpurpose',[PurposeController::class,'store'])->name('store.new.purpose');  
+    Route::delete('/config/destroy/purpose/{id}',[PurposeController::class,'destroy'])->name('destroy.purpose');
+    Route::get('/config/edit/purpose/{id}',[PurposeController::class,'edit'])->name('update.purpose.form');
+    Route::put('/config/update/purpose/{id}',[PurposeController::class,'update'])->name('update.purpose');
     
 });
 

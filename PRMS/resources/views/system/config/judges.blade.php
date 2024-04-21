@@ -23,7 +23,7 @@
 
                 <p class="text-center fs-5">Configurations <i class="fa fa-cogs" aria-hidden="true"></i></p>
                 @include('system.config.config-header')
-                
+                  
                 <form method="POST" action="{{ route('store.new.judge') }}">
                   @csrf
                   <div class="row">
@@ -91,11 +91,15 @@
                                     <td>{{$judge['name']}}</td>
                                     <td>{{$judge['gender']}}</td>
                                     <td class="bg-light-secondary">
+                                          @php
+                                              $id = Crypt::encrypt($judge['id']);
+                                          @endphp 
                                         <div class="row">
-                                          <a href="" class="btn btn-outline-success col-3 btn btn-rounded-0 btn-sm border-0">
+                                          <a href="{{ route('update.judge.form',['id'=>$id]) }}" class="btn btn-outline-success col-3 btn btn-rounded-0 btn-sm border-0">
                                             <i class="fa fa-user-edit" aria-hidden="true"></i>
                                           </a>
-                                        <form class="col-6" action="" method="POST">
+                                        <form class="col-6" action="{{ route('destroy.judge',['id'=>$id]) }}" method="POST">
+                                          @csrf
                                           @method('DELETE')
                                           <button type="submit" class="btn btn-outline-danger btn btn-rounded-0 btn-sm border-0">
                                             <i class="fa fa-trash" aria-hidden="true"></i>

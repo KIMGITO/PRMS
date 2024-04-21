@@ -68,11 +68,19 @@
                                     <td scope="row">{{ $count }}</td>
                                     <td>{{$court['name']}}</td>
                                     <td class="bg-light-secondary">
+                                      @php
+                                          $id = Crypt::encrypt($court['id']);
+                                      @endphp
                                         <div class="row">
-                                          <a href="" class="btn btn-outline-success col-3 btn btn-rounded-0 btn-sm border-0">
+                                          <a href="{{ route('update.court.form',['id'=>$id]) }}" class="btn btn-outline-success col-3 btn btn-rounded-0 btn-sm border-0">
                                             <i class="fa fa-file-signature fs-4 " aria-hidden="true"></i>
                                           </a>
-                                        <form class="col-6" action="" method="POST">
+                                          @php
+                                              $id = Crypt::encrypt($court['id']);
+                                          @endphp
+
+                                        <form class="col-6" action="{{ route('destroy.court',['id'=>$id]) }}" method="POST">
+                                          @csrf
                                           @method('DELETE')
                                           <button type="submit" class="btn btn-outline-danger btn btn-rounded-0 btn-sm border-0">
                                             <i class="fa fa-file-circle-xmark fs-4 " aria-hidden="true"></i>

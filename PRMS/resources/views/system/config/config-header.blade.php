@@ -26,4 +26,9 @@
             {{session('error')}}
         </div>
     @endif
+    @if (session('info'))
+        <div class="text-primary bg-light-primary mt-1 py-1">
+            {{session('info')}}
+        </div>
+    @endif
 </div>

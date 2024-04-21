@@ -101,11 +101,15 @@
                                     <td>{{ $purpose['supervised']== '1' ?'Yes':'No' }}</td>
                                     <td class="small text-primary">{{ $purpose['description'] }}</td>
                                     <td class="bg-light-secondary">
+                                          @php
+                                              $id = Crypt::encrypt($purpose['id']);;
+                                          @endphp
                                         <div class="row">
-                                          <a href="" class="btn btn-outline-success col-3 btn btn-rounded-0 btn-sm border-0">
+                                          <a href="{{ route('update.purpose.form',['id'=>$id]) }}" class="btn btn-outline-success col-3 btn btn-rounded-0 btn-sm border-0">
                                             <i class="fa fa-user-edit" aria-hidden="true"></i>
                                           </a>
-                                        <form class="col-6" action="" method="POST">
+                                        <form class="col-6" action="{{ route('destroy.purpose',['id'=>$id]) }}" method="POST">
+                                          @csrf
                                           @method('DELETE')
                                           <button type="submit" class="btn btn-outline-danger btn btn-rounded-0 btn-sm border-0">
                                             <i class="fa fa-trash" aria-hidden="true"></i>
