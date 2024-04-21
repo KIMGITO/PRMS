@@ -35,15 +35,14 @@ class CaseSeeder extends Seeder
 
             $now = Carbon::now();
 
-            foreach ($caseData as $caseType => $data) {
-                DB::table('casetypes')->insert([
-                    'case_type' => $caseType,
-                    'initials' => $data['initials'],
-                    'duration' => $data['retention_time'],
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
+            $data = [];
+            foreach ($caseData as $case) {
+                $case['created_at'] = $now;
+                $case['updated_at'] = $now;
+                $data[] = $case;
             }
+
+        DB::table('casetypes')->insert($data);
         }
     }
 }

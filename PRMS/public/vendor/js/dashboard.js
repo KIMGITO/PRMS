@@ -113,9 +113,9 @@ $(function () {
   var breakup = {
     color: "#adb5bd",
     series: [38, 40, 25],
-    labels: ["2022", "2021", "2020"],
+    labels: caseTypes,
     chart: {
-      width: 180,
+      width: 300,
       type: "donut",
       fontFamily: "Plus Jakarta Sans', sans-serif",
       foreColor: "#adb0bb",
@@ -125,7 +125,7 @@ $(function () {
         startAngle: 0,
         endAngle: 360,
         donut: {
-          size: '75%',
+          size: '50%',
         },
       },
     },
@@ -140,7 +140,7 @@ $(function () {
     legend: {
       show: false,
     },
-    colors: ["#5D87FF", "#ecf2ff", "#F9F9FD"],
+    colors: colors,
 
     responsive: [
       {
@@ -170,7 +170,7 @@ $(function () {
     chart: {
       id: "sparkline3",
       type: "area",
-      height: 60,
+      height: 0,
       sparkline: {
         enabled: true,
       },

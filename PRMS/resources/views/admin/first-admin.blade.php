@@ -35,19 +35,9 @@
                   <div class="card-body">
     
                     <p class="text-center fs-5">System Administrator </p>
-                    <div class="alert alert-info">
+                    <div class="bg-dark p-2 mb-2 rounded">
                         <p class="h-2 fw-bolder text-danger">NOTE!</p>
-                        <p>The system has detected that no existing users are present.
-                             As a result, this page is being displayed to create an Admin account.
-                                <span class="text-danger fw-bold">Please note that this form should 
-                                    only be filled out by the intended administrator.
-                                </span> 
-                                It will only be displayed this one time. 
-                                <span class="text-success">
-                                    Please fill out the  form below to create the Admin account and proceed 
-                                    to PAPER RECORDS MANAGEMENT SYSTEM.    
-                                </span>
-                        </p>
+                        <p class="lead text-success">Welcome to the Admin Registration Page. Our system has detected that no existing admin users are present, so this page is being displayed to create an admin account. Please note that this form should only be filled out by the intended administrator. This page will only be displayed once. Kindly fill out the form below to create the admin account and proceed to the PAPER RECORDS MANAGEMENT SYSTEM.</p>
                     </div>
                     <form method="POST" action="{{ route('store.first.admin')}}">
                       @csrf

@@ -90,7 +90,6 @@ class UserController extends Controller
             $user_id = auth()->user()->id;
         }
         event(new UserWithOTPCreated($request->input('email'), $otp, 'OTP- Verification'));
-        // event(new ActivityProcessed($user_id, 'A new user ('.$user->first_name.' '.$user->last_name.') was created.','create', true));
         if(!auth()->user()){
             return redirect()->route('index');
         }else{

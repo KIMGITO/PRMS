@@ -6,19 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-    {
-        Schema::create('logged_activities', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->text('description');
-            $table->string('action');
-            $table->boolean('status');
-        });
-    }
+{
+    Schema::create('logged_activities', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('user_id')->nullable();
+        $table->text('description');
+        $table->string('action');
+        $table->boolean('status');
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

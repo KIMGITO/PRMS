@@ -15,18 +15,8 @@ class CasetypeController extends Controller
      */
     public function index()
     {
-        //
         $types = Casetype::all();
         return view('system.config.case-types', ['types' => $types]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-        // return view('system.config.case-types');
     }
 
     /**
@@ -34,7 +24,6 @@ class CasetypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $validator = Validator::make($request->all(), [
             'initials' => 'required|unique:casetypes,initials',
             'caseType' => 'required|unique:casetypes,case_type',
@@ -49,50 +38,21 @@ class CasetypeController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-
         $case = new Casetype();
         $case->initials = $request->input('initials');
         $case->case_type = $request->input('caseType');
         $case->duration = $request->input('duration');
 
+        $activityDescription = 'Created a new casetype';
+        $activityAction = 'create';
+        $activityStatus = true;
+
         if ($case->save()) {
-            event(new ActivityProcessed(auth()->user()->id, 'User ( ' . auth()->user()->first_name . ' ' . auth()->user()->last_name . ' ) created a new casetype  ', 'create', true));
+            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
             return  redirect()->back()->with('success', 'New CaseType ,' . $request->input('caseType') . ' Was added.');
         } else {
-            event(new ActivityProcessed(auth()->user()->id, 'Failed  to  created a new casetype  ', 'create', false));
-            return  redirect()->back()->with('error', 'Error occured when adding,' . $request->input('caseType'));
+            event(new ActivityProcessed(auth()->user()->id, 'Failed to create a new casetype', 'create', false));
+            return  redirect()->back()->with('error', 'Error occurred when adding,' . $request->input('caseType'));
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Casetype $casetype)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Casetype $casetype)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Casetype $casetype)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Casetype $casetype)
-    {
-        //
     }
 }

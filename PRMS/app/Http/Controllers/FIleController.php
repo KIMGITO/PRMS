@@ -15,6 +15,7 @@ use illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use App\Events\ActivityProcessed;
 
 class FIleController extends Controller
 {
@@ -189,71 +190,76 @@ class FIleController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        // check for constraints
-        $customAttributes = [
-            'caseNumber' => 'case number',
-            'caseType'=>'case type',
-            'filingDate'=>'filing date',
-            'rullingDate'=>'Rulling Date',
-            'plaintiffs'=>'plaintiff(s)',
-            'defendants'=>'defendant(s)',
-            'judge'=>'presiding judge',
-            'court'=>'court',
-            'caseDescription'=>'case description'
-        ];
-        Validator::extend('select', function ($attribute, $value, $parameters, $validator) {
-            return $value != '0';
-        });
+{
+    $customAttributes = [
+        'caseNumber' => 'case number',
+        'caseType' => 'case type',
+        'filingDate' => 'filing date',
+        'rullingDate' => 'Rulling Date',
+        'plaintiffs' => 'plaintiff(s)',
+        'defendants' => 'defendant(s)',
+        'judge' => 'presiding judge',
+        'court' => 'court',
+        'caseDescription' => 'case description'
+    ];
 
-        $validator = Validator::make($request->all(),[
-            'caseNumber'=>'required|string|unique:files,case_number',
-            'caseType'=>'required|integer|select',
-            'filingDate'=>'required|date|before:+0 day',
-            'rullingDate'=>'nullable|date|before:+0 day',
-            'plaintiffs'=>'required|string|min:5',
-            'defendants'=>'required:string|min:5',
-            'judge'=>'required|integer|select',
-            'court'=>'required|integer|select',
-            'caseDescription'=>'nullable|max:300|string'
-        ],[ //cusom error messages
-            'select'=>'Please select one option from :attribute selections',
-            'plaintiff.required'=>'A plaintiff or Plaintiffs are required.',
-            'defendant.required'=>'A defendant or defendants are required.',
-            'before'=>'The :attribute must be today or the past.'
-        ]);
-        $validator->setAttributeNames($customAttributes);
+    Validator::extend('select', function ($attribute, $value, $parameters, $validator) {
+        return $value != '0';
+    });
 
+    $validator = Validator::make($request->all(), [
+        'caseNumber' => 'required|string|unique:files,case_number',
+        'caseType' => 'required|integer|select',
+        'filingDate' => 'required|date|before:+0 day',
+        'rullingDate' => 'nullable|date|before:+0 day',
+        'plaintiffs' => 'required|string|min:5',
+        'defendants' => 'required|string|min:5',
+        'judge' => 'required|integer|select',
+        'court' => 'required|integer|select',
+        'caseDescription' => 'nullable|max:300|string'
+    ], [
+        'select' => 'Please select one option from :attribute selections',
+        'plaintiff.required' => 'A plaintiff or Plaintiffs are required.',
+        'defendant.required' => 'A defendant or defendants are required.',
+        'before' => 'The :attribute must be today or the past.'
+    ]);
+    $validator->setAttributeNames($customAttributes);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-            // add the initials as devined
-            $caseNumber = $request->input('caseNumber');
-            if(preg_match('/\d/',$caseNumber,$match)){
-                $position = strpos($caseNumber,$match[0]);
-                $caseNumber = substr($caseNumber,$position);
-            }
-
-            $file = new File();
-
-            $file->case_number = $caseNumber;
-            $file->casetype_id= $request->input("caseType");
-            $file->filing_date= $request->input("filingDate");
-            $file->ruling_date= $request->input("rullingDate");
-            $file->plaintiffs= $request->input("plaintiffs");
-            $file->defendants= $request->input("defendants");
-            $file->judge_id= $request->input("judge");
-            $file->court_id= $request->input("court");
-            $file->case_description= $request->input("caseDescription");
-
-            if($file->save()){
-                return redirect()->back()->with('success','File added successiffuly');
-            }else{
-                return redirect()->back()->with('error','Filed to add the file')->withInput();
-            }
-
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    $caseNumber = $request->input('caseNumber');
+    if (preg_match('/\d/', $caseNumber, $match)) {
+        $position = strpos($caseNumber, $match[0]);
+        $caseNumber = substr($caseNumber, $position);
+    }
+
+    $file = new File();
+    $file->case_number = $caseNumber;
+    $file->casetype_id = $request->input("caseType");
+    $file->filing_date = $request->input("filingDate");
+    $file->ruling_date = $request->input("rullingDate");
+    $file->plaintiffs = $request->input("plaintiffs");
+    $file->defendants = $request->input("defendants");
+    $file->judge_id = $request->input("judge");
+    $file->court_id = $request->input("court");
+    $file->case_description = $request->input("caseDescription");
+
+    $activityDescription = 'Added a new file: ' . $file->case_number;
+    $activityAction = 'create';
+    $activityStatus = $file->save();
+
+    if ($activityStatus) {
+        // Log activity for file creation
+        event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
+        return redirect()->back()->with('success', 'File added successfully');
+    } else {
+        // Log activity for failed file creation
+        event(new ActivityProcessed(auth()->user()->id, 'Failed to add a new file', 'create', false));
+        return redirect()->back()->with('error', 'Failed to add the file')->withInput();
+    }
+}
 
    
     
@@ -261,23 +267,23 @@ class FIleController extends Controller
      * Display the specified resource.
      */
     public function info($id)
-    {
-       try {
+{
+    try {
         $id = decrypt($id);
         $info = File::where(['id' => $id])->firstOrFail();
 
-        $count = Transaction::select('id')->where(['file_id'=>$id])->whereNotNull('dateBack')->count();
-        $status = Transaction::where('file_id',$id)->orderBy('created_at','desc')->first();
-        if(!empty($status)){
-            if($status['dateBack'] != null){
+        $count = Transaction::select('id')->where(['file_id' => $id])->whereNotNull('dateBack')->count();
+        $status = Transaction::where('file_id', $id)->orderBy('created_at', 'desc')->first();
+        if (!empty($status)) {
+            if ($status['dateBack'] != null) {
                 $info['status'] = 'available';
-            }else{
-                $info['status']= 'on Loan';
+            } else {
+                $info['status'] = 'on Loan';
             }
-        }else{
+        } else {
             $info['status'] = 'available';
         }
-        
+
         $baseUrl = URL::to('/');
         $previousUrl = URL::previous();
         $backRoute = str_replace($baseUrl, '', parse_url($previousUrl, PHP_URL_PATH));
@@ -286,13 +292,20 @@ class FIleController extends Controller
         $info['url'] = $backRoute;
         $info['transaction_count'] = $count;
 
-        return view('files.file-info',['info'=>$info]);
-       } catch (\Throwable $th) {
+        // Log activity for viewing file info
+        $activityDescription = 'Viewed file info for file ID: ' . $id;
+        $activityAction = 'view';
+        $activityStatus = true; // Assuming the view always succeeds
+
+        event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
+
+        return view('files.file-info', ['info' => $info]);
+    } catch (\Throwable $th) {
         dd($th->getMessage());
         abort(404);
         return;
-       }
     }
+}
 
     /**
      * Show the form for editing the specified resource.

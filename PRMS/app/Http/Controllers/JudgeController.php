@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Judge;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class JudgeController extends Controller
 {

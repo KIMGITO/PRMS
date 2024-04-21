@@ -48,8 +48,8 @@
             {{--  CAse types --}}
               <div class=" overflow-hidden">
                 <div class="card-body p-4">
-                  <h5 class="card-title mb-9 fw-semibold">System Assets</h5>
-                  <div class="row align-items-center">
+                  {{-- <h5 class="card-title mb-9 fw-semibold">System Assets</h5>
+                  <div class="row align-items-center"> --}}
                     {{-- <div class="col-8">
                       <h4 class="fw-semibold mb-3">2,000 Records</h4>
                       <div class="d-flex align-items-center mb-3">
@@ -97,9 +97,9 @@
                     <script>
                       var chart_name = @json($name)
                     </script>
-                    <div id="earnings" class="mt-5"></div>
+                    <div id="breakup" class="mt-5"></div>
                     
-                  </div>
+                  {{-- </div> --}}
                 </div>
               </div>
             </div>
