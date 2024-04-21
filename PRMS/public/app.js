@@ -418,3 +418,25 @@ var options = {
 // Initialize the donut chart
 var chart = new ApexCharts(document.querySelector("#earnings"), options);
 chart.render();
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+$(document).ready(function() {
+  $(document).ready(function() {
+    $('#selectAll').on('change', function() {
+        $('.activityCheckbox').prop('checked', this.checked);
+    });
+});
+
+    $('#deleteSelected').on('click', function() {
+        var selectedIds = $('.activityCheckbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+var selectedIds = $('.activityCheckbox:checked').map(function() {
+    return $(this).val();
+}).get();
+        $('#selectedActivities').val(selectedIds);
+        $('#deleteSelectedForm').submit();
+    });
+});

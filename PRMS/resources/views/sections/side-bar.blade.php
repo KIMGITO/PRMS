@@ -174,7 +174,7 @@
               <i class="fs-5 p-2 mt-1 fa fa-sitemap"></i>
               <p class="mb-0 fs-4"> Departments</p>
             </a>
-            <a href="" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-info">
+            <a href="{{ route('logged.activities') }}" class=" bg-indigo mb-1 p-1 d-flex align-items-end gap-3 dropdown-item rounded-1 text-info">
               <i class="fs-5 p-2 mt-1 fa fa-fingerprint"></i>
               <p class="mb-0 fs-4">Logged Activies</p>
             </a>

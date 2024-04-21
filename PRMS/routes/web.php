@@ -10,6 +10,7 @@ use App\Http\Controllers\JudgeController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PurposeController;
 use App\Http\Controllers\CasetypeController;
+use App\Http\Controllers\LoggedActivityController;
 use App\Http\Controllers\TransactionController;
 
 
@@ -122,5 +123,12 @@ Route::middleware(['user.auth','admin','verified'])->group(function(){
 Route::middleware(['user.auth'])->group(function () {
     Route::get('/profile', [UserController::class,'profile'])->name('user.profile');
     Route::put('/profiile/update',[UserController::class,'profileUpdate'])->name('update.profile');
+});
+
+// Logged activities
+
+Route::middleware(['user.auth','admin','verified'])->group(function (){
+    Route::get('/activities', [LoggedActivityController::class,'index'])->name('logged.activities');
+    Route::post('/activities/delete',[LoggedActivityController::class,'deleteSelectedActivities'])->name('delete.selected.activities');
 });
 
