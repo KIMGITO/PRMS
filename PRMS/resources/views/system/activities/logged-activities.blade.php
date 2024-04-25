@@ -17,13 +17,27 @@
                     <div class="col-md-12 mt-5 col-lg-10 col-xxl-5">
                         <div class="card mb-0">
                             <div class="card-body">
+                                @if (session('success'))
+                  <div class="text-success bg-light-success mt-1 py-1 rounded-2 text-center">
+                    {{session('success')}}
+                  </div>
+                            @endif
+                            @if (session('warning'))
+                            <div class="text-warning bg-light-warning mt-1 py-1 rounded-2 text-center">
+                                {{session('warning')}}
+                            </div>
+                            @endif
+                            @if (session('error'))
+                            <div class="text-danger bg-light-danger mt-1 py-1 rounded-2 text-center">
+                                {{session('error')}}
+                            </div>
+                            @endif
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <p class="text-center fs-5">Logged Activities <i class="fa fa-list" aria-hidden="true"></i></p>
-                                    <div>
-                                        <label class="form-check-label" for="selectAll">Select All</label>
-                                        <input type="checkbox" id="selectAll">
-                                        <button class="btn btn-danger" id="deleteSelected">Delete Selected</button>
-                                    </div>
+                                    <div class="col-md-6 log-lg- d-flex justify-content-between align-items-center">
+                                        <label class="form-check-label" for="selectAll">Select All <input type="checkbox" id="selectAll"></label>
+                                        <button class="btn btn-danger" id="deleteSelected">Delete <i class="fa fa-trash"></i> </button>
+                                    </div>  
                                 </div>
                                 <form class="form-horizontal" id="deleteSelectedForm" action="{{ route('delete.selected.activities') }}" method="POST">
                                     @csrf

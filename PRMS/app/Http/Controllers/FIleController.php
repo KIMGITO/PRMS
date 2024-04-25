@@ -19,6 +19,24 @@ use App\Events\ActivityProcessed;
 
 class FIleController extends Controller
 {
+
+    /**
+     * Calculate the disposal date.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+     public function calculateDisposalDate($creationDate, $duration){
+    $disposalDate = Carbon::parse($creationDate)->addYears($duration);
+
+    // Group the disposal date to the nearest quarterly date of the year this 
+    // assumes that the disposal  occures4 times a year
+    $disposalDate->startOfQuarter()->addQuarters(1);
+
+    return ($disposalDate->toDateString());
+}
+
+
     /**
      * Display a listing of the resource.
      */
@@ -36,6 +54,8 @@ class FIleController extends Controller
             }else{
                 $file['status'] = 'available';
             }
+            $data['disposal'] = $this->calculateDisposalDate($file->created_at, $file->casetype->duration);
+            
         }
 
         $message = "";
@@ -283,7 +303,7 @@ class FIleController extends Controller
         } else {
             $info['status'] = 'available';
         }
-
+        $info['disposal'] = $this->calculateDisposalDate($info['disposal_date'],$info->casetype->duration);
         $baseUrl = URL::to('/');
         $previousUrl = URL::previous();
         $backRoute = str_replace($baseUrl, '', parse_url($previousUrl, PHP_URL_PATH));

@@ -42,12 +42,17 @@ public function index()
 
 public function deleteSelectedActivities(Request $request)
 {
-    // dd($selectedIds = json_decode($request->input('selectedActivities')));
-    $selectedIds = $request->input('selectedActivities');
-
-    LoggedActivities::whereIn('id', $selectedIds)->delete();
-
-    return redirect()->back()->with('success', 'Selected activities deleted successfully');
+    try {
+        $selectedIds = $request->input('selectedActivities', []);
+        $selectedIds = explode(',', $selectedIds);
+        // dd($selectedIds);
+        LoggedActivities::whereIn('id', $selectedIds)->delete();
+        $this->store(Auth()->user()->id, 'deleted logged activities', 'delete', true); 
+        return redirect()->back()->with('success', 'Logged Activities deleted successfully');
+    } catch (\Exception $e) {
+        $this->store(Auth()->user()->id, 'Failed to delete logged activities', 'delete', false); 
+        return redirect()->back()->with('error', 'Failed to delete selected activities');
+    }
 }
     
 

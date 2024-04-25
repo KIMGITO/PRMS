@@ -39,7 +39,7 @@ class FileSeeder extends Seeder
         $casetypeId = $faker->numberBetween(1, 5);
         $judgeId = $faker->numberBetween(1, 5);
         $courtId = $faker->numberBetween(1, 5);
-        $caseDescription = $faker->optional()->paragraph;
+        $caseDescription = $faker->paragraph;
 
         $data[] = [
             'case_number' => $caseNumber . '/' . $caseYear,

@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Casetype extends Model
 {
     use HasFactory;
+
+
+    protected $fillables = [
+        'case_type',
+        'initials',
+        'duration',
+    ];
+
     public function files(){ 
         return $this->hasMany(File::class);
     }
