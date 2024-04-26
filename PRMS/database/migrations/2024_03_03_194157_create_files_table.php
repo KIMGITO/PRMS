@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignId('judge_id')->constrained('judges')->onDelete('cascade');
             $table->foreignId('court_id')->constrained('courts')->onDelete('cascade');
             $table->text('case_description')->nullable();
+            $table->date('disposal_date');
         });
     }
 

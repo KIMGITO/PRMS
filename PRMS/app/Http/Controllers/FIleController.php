@@ -255,6 +255,8 @@ class FIleController extends Controller
         $caseNumber = substr($caseNumber, $position);
     }
 
+    $duration = Casetype::where(['id' => $request->input("caseType")])->select('duration')->firstOrFail();
+    
     $file = new File();
     $file->case_number = $caseNumber;
     $file->casetype_id = $request->input("caseType");
@@ -264,8 +266,8 @@ class FIleController extends Controller
     $file->defendants = $request->input("defendants");
     $file->judge_id = $request->input("judge");
     $file->court_id = $request->input("court");
+    $file->disposal_date = $this->calculateDisposalDate(Carbon::now(),$duration->duration);
     $file->case_description = $request->input("caseDescription");
-
     $activityDescription = 'Added a new file: ' . $file->case_number;
     $activityAction = 'create';
     $activityStatus = $file->save();
@@ -299,6 +301,13 @@ class FIleController extends Controller
                 $info['status'] = 'available';
             } else {
                 $info['status'] = 'on Loan';
+                $reason = Transaction::where(['file_id'=> $id])->with('purposes')->firstOrFail();
+                $purposes = $reason->purposes;
+                $info['purpose']=[];
+
+                foreach($purposes as $purpose){
+                    $info['purpose'] = $purpose->purpose;
+                }
             }
         } else {
             $info['status'] = 'available';
@@ -311,11 +320,12 @@ class FIleController extends Controller
         $backRoute = str_replace('/', '-', $backRoute);
         $info['url'] = $backRoute;
         $info['transaction_count'] = $count;
+        
 
         // Log activity for viewing file info
         $activityDescription = 'Viewed file info for file ID: ' . $id;
         $activityAction = 'view';
-        $activityStatus = true; // Assuming the view always succeeds
+        $activityStatus = true; 
 
         event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
 

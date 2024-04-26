@@ -26,8 +26,10 @@
                 <a href="{{ url('/') }}" class="text-nowrap logo-img text-center d-block pb-4 w-100">
                   <img src="{{ asset('images/logos/logo.png') }}" class="rounded-circle" width="100" alt="">
                 </a>
-                
-                <form method="POST" action="{{ route('edit.user',['id'=>$user['id']])}}">
+                @php
+                    $id = Crypt::encrypt($user['id']);
+                @endphp
+                <form method="POST" action="{{ route('edit.user',['id'=>$id])}}">
                     @csrf
                     @method('PUT')
                   <div class="row">

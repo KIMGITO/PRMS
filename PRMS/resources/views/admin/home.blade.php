@@ -24,6 +24,11 @@
                       {{ session('error') }}
                   </div>
               @endif
+              @if (session('info'))
+                  <div class="text-primary fw-bold">
+                    {{ session('info') }}
+                  </div>
+              @endif
               <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
                 <div class="mb-3 mb-sm-0">
                   <h5 class="card-title fw-semibold"> Records Transactions</h5>

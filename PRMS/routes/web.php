@@ -54,7 +54,7 @@ Route::middleware([ 'user.auth','admin','verified'])->group(function () {
     Route::get('/user/list', [UserController::class,'index'])->name('user.list');
     Route::get('/user/new', [UserController::class,'create'])->name('create.user.form');
     Route::get('/user/{id}', [UserController::class,'edit'])->name('edit.user.form');
-    Route::put('/user/edit/{id}', [UserController::class,'update'])->name('edit.user');
+    Route::put('/user/edit/{id}', [UserController::class,'editUser'])->name('edit.user');
     Route::post('/user/add/new', [UserController::class,'store'])->name('store.new.user');
     Route::delete('/user/delete/{id}',[UserController::class,'destroy'])->name('destroy.user');
 });
@@ -120,9 +120,9 @@ Route::middleware(['user.auth','admin','verified'])->group(function(){
 
 //User Profile
 
-Route::middleware(['user.auth'])->group(function () {
+Route::middleware(['user.auth','verified'])->group(function () {
     Route::get('/profile', [UserController::class,'profile'])->name('user.profile');
-    Route::put('/profiile/update',[UserController::class,'profileUpdate'])->name('update.profile');
+    Route::put('/profile/update',[UserController::class,'profileUpdate'])->name('update.profile');
 });
 
 // Logged activities

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Faker\Factory as Faker;
+use Carbon\Carbon;
 
 class FileSeeder extends Seeder
 {
@@ -50,6 +51,7 @@ class FileSeeder extends Seeder
             'defendants' => $defendants,
             'judge_id' => $judgeId,
             'court_id' => $courtId,
+            'disposal_date'=> Carbon::now()->addYears(12),
             'case_description' => $caseDescription,
             'created_at' => now(),
             'updated_at' => now(),

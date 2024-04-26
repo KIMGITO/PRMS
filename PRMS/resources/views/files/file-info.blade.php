@@ -16,7 +16,7 @@
                             <div class="card-body bg-dark text-light">
                                 <div class="row">
                                     <a href="{{ route('redirect.back',['url'=>$info->url]) }}" class="btn btn-sm mb-3 col-1 fw-bolder bg-danger-subtle">Back</a>
-                                    <p class="text-center col-11 fs-5"> <i class="fa fa-info-circle" aria-hidden="true"></i> File Info</p>
+                                    <p class="text-center col-11 fs-5 text-success"> <i class="fa fa-info-circle text-white" aria-hidden="true"></i> <span class="text-white">File Info</span> <span class="ms-5 mx-2 fs-2"><span class="text-info fs-4">Judge</span>: {{$info->judge->name}}</span> <span class="text-info fs-4">Court</span>: <span class="fs-2">{{$info->court->name}}</span></span> </p> 
                                 </div>
                                 <div class="row">
                                     <div class="col-3">
@@ -32,8 +32,8 @@
                                             <div title="Status" class="col-4 {{$info->status =='available'?'text-success':'text-danger'}} text-capitalize">
                                                 <i class="fa fa-question-circle fa-bounce text-primary fs-5" aria-hidden="true"></i> <span class="text-primary"></span> {{$info->status}}
                                             </div>
-                                            <div class="col-4 text-danger" title="Dispoal Date ">
-                                            {{$info->disposal}} <i class="fas fa-trash fa-shake fs-4"></i>  
+                                            <div class="col-4 text-info" title="Dispoal Date ">
+                                            {{$info->disposal}} <i class="fas fa-trash fa-shake fs-4 text-danger"></i>  
                                           </div>
                                         </div>
                                     </div>

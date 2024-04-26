@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Listeners\SendOtpNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Crypt;
 
 
 class UserController extends Controller
@@ -116,6 +117,12 @@ class UserController extends Controller
      */
     public function edit(user $user, $id)
     {
+        try{
+            $id = decrypt($id);
+        }catch(\Throwable $e){
+            abort (404);
+        }
+
         $user = User::where('id',$id)->firstOrFail();
         return view('admin.users.edit-user',['user'=>$user]);
     }
@@ -123,83 +130,74 @@ class UserController extends Controller
      * Admin update another user
      */
     public function editUser(Request $request, $id){
-        try {
+    try {
         $id = decrypt($id);
-        } catch (\Throwable $th) {
-            abort(400);
-        }
+    } catch (\Throwable $th) {
+        abort(400);
+    }
 
-        $request['id'] = $id;
+    $request['id'] = $id;
 
-        if($this->update($request)){
+    $user = User::findOrFail($id);
+
+    $validator = Validator::make($request->all(), [
+        'firstName' => 'required|string|max:255',
+        'lastName' => 'required|string|max:255',
+        'nationalId' => 'required|numeric|digits:8',
+        'workId' => 'required|string|max:15',
+        'phone' => 'required|string|max:15',
+    ]);
+    $request->validate([
+        'email' => [
+            'required',
+            'email',
+            Rule::unique('users')->ignore($user->id),
+        ],
+    ]);
+
+    $customAttributes=[
+        'fistName'=>'Fist Name',
+        'lastName'=>'Last Name',
+        'nationalId'=>'ID Number',
+        'workId'=>'Job Number',
+        'email'=>'Email Address',
+        'phone'=>'Phone Number'
+    ];
+
+    $validator->setAttributeNames($customAttributes);
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    $user->first_name = $request->input('firstName');
+    $user->last_name = $request->input('lastName');
+    $user->national_id = $request->input('nationalId');
+    $user->work_id = $request->input('workId');
+    $user->email = $request->input('email');
+    $user->phone = $request->input('phone');
+    $user->role = $request->input('role');
+
+    if($user->isDirty()) {
+        if($user->save()){
             // Log the activity of successfully updating a user
             $activityDescription = 'User was successfully updated';
             $activityAction = 'update';
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
-            return redirect('/admin')->with('success','User was successfully updated');
-        }else{
+            return redirect()->route('user.list')->with('success', 'User was successfully updated');
+        } else {
             // Log the activity of failing to update a user
             $activityDescription = 'Failed to update user';
             $activityAction = 'update';
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, false));
-            return redirect('/admin')->with('error','Failed to update user, please try again');
+            return redirect()->route('user.list')->with('error', 'Failed to update user, please try again');
         }
-        
+    } else {
+        // No changes were made
+        return redirect()->route('user.list')->with('info', 'No changes were made to the user');
     }
+}
    
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request)
-    {
-        //edit user
-        $customAttributes=[
-            'fistName'=>'Fist Name',
-            'lastName'=>'Last Name',
-            'nationalId'=>'ID Number',
-            'workId'=>'Job Number',
-            'email'=>'Email Address',
-            'phone'=>'Phone Number'
-        ];
-
-        $user = User::findOrFail($request->input('id'));
-        $validator = Validator::make($request->all(), [
-            'firstName' => 'required|string|max:255',
-            'lastName' => 'required|string|max:255',
-            'nationalId' => 'required|numeric|digits:8',
-            'workId' => 'required|string|max:15',
-            'phone' => 'required|string|max:15',
-        ]);
-        $request->validate([
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($user->id),
-            ],
-        ]);
-
-        $validator->setAttributeNames($customAttributes);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-        
-        $user->first_name = $request->input('firstName');
-        $user->last_name = $request->input('lastName');
-        $user->national_id = $request->input('nationalId');
-        $user->work_id = $request->input('workId');
-        $user->email = $request->input('email');
-        $user->phone = $request->input('phone');
-        $user->role = $request->input('role');
-
-        if($user->save()){
-            event(new ActivityProcessed(auth()->user()->id, '['.auth()->user()->first_name.'] updated user ( '.$user->first_name.' '.$user->last_name.' ) ','update', true));
-        }else{
-            event(new ActivityProcessed(auth()->user()->id, '['.auth()->user()->first_name.'] Failed to update user ( '.$user->first_name.' '.$user->last_name.' ) ','update', false));
-        }
-        return $user->save();
-        
-    }
 
     /**
      * Display user profile 

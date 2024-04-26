@@ -48,8 +48,18 @@
                       </div>
                   @endif
                   @if(session('error'))
-                      <div class="alert alert-warning fw-bold">
+                      <div class="alert alert-danger fw-bold">
                           {{ session('error') }}
+                      </div>
+                  @endif
+                  @if(session('warning'))
+                    <div class="alert alert-warning fw-bold">
+                        {{ session('error') }}
+                    </div>
+                  @endif
+                  @if (session('info'))
+                      <div class="alert alert-primary fw-bold">
+                        {{ session('info') }}
                       </div>
                   @endif
 
@@ -75,6 +85,9 @@
                               $count = 1;
                           @endphp
                           @foreach ($users as $user)
+                          @php
+                              $id = Crypt::encrypt($user['id']);
+                          @endphp
                           <tr>
                             <td>{{$user['first_name'].' '.$user['last_name']}}</td>
                             <td>{{$user['national_id']}}</td>
@@ -84,7 +97,7 @@
                             <td>{{$user['role']}}</td>
                             <td class="bg-light">
                               <div class="row">
-                                <a href="{{ $user->id == auth()->user()->id ? route('user.profile'):route('edit.user.form',['id'=>$user['id']])}}" class="btn btn-outline-success col-4 btn btn-rounded-0 btn-sm border-0">
+                                <a href="{{ $user->id == auth()->user()->id ? route('user.profile'):route('edit.user.form',['id'=>$id])}}" class="btn btn-outline-success col-4 btn btn-rounded-0 btn-sm border-0">
                                   <i class="fa fa-user-edit fs-4 " aria-hidden="true"></i>
                                 </a>
                               <form class="col-6" action="{{ route('destroy.user',['id'=>$user['id']]) }}" id="form-{{$user['id']}}" method="POST">
