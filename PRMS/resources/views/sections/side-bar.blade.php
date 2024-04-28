@@ -138,9 +138,9 @@
             </li>
             <div class="container collapse" id="reports">
               <div class="message-body ms-3 p-2 bg-dark">
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
+                <a href="{{ route('disposal.files') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
                   <i class="fs-4 p-1 mt-1 fa fa-file-invoice"></i>
-                  <p class="mb-0 fs-4"> Files Analysis</p>
+                  <p class="mb-0 fs-4"> Mature Files</p>
                 </a>
                 <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-info">
                   <i class="fs-4 p-1 mt-1 fa fa-file-circle-plus"></i>

@@ -38,7 +38,5 @@
   <script src="{{ asset('app.js') }}"></script>
 
 </body>
-{{-- Clound Js --}}
-{{ view('sections.clounds-background') }}
 
 </html>

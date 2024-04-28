@@ -312,7 +312,6 @@ class FIleController extends Controller
         } else {
             $info['status'] = 'available';
         }
-        $info['disposal'] = $this->calculateDisposalDate($info['disposal_date'],$info->casetype->duration);
         $baseUrl = URL::to('/');
         $previousUrl = URL::previous();
         $backRoute = str_replace($baseUrl, '', parse_url($previousUrl, PHP_URL_PATH));

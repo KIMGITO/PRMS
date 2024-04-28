@@ -29,11 +29,11 @@
                                             <div title="Numbe of Successfful Transactions" class="col-4 text-info">
                                                 <i class="fas fa-handshake fs-4"></i> {{$info->transaction_count}} 
                                             </div>
-                                            <div title="Status" class="col-4 {{$info->status =='available'?'text-success':'text-danger'}} text-capitalize">
-                                                <i class="fa fa-question-circle fa-bounce text-primary fs-5" aria-hidden="true"></i> <span class="text-primary"></span> {{$info->status}}
+                                            <div title="Status" class="col-4 fa-bounce {{$info->status =='available'?'text-success':'text-danger'}} text-capitalize">
+                                                <i class="fa fa-question-circle  {{$info->status =='available'?'text-success':'text-danger'}} fs-5" aria-hidden="true"></i> <span class="text-primary"></span> {{$info->status}}
                                             </div>
-                                            <div class="col-4 text-info" title="Dispoal Date ">
-                                            {{$info->disposal}} <i class="fas fa-trash fa-shake fs-4 text-danger"></i>  
+                                            <div class="col-4 text-primary" title="Dispoal Date ">
+                                            <span class="bg-danger px-1 rounded-3">{{$info->disposal_date}}</span> <i class="fas fa-trash fa-shake fs-4 text-danger"></i>  
                                           </div>
                                         </div>
                                     </div>

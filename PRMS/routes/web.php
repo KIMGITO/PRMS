@@ -11,6 +11,7 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PurposeController;
 use App\Http\Controllers\CasetypeController;
 use App\Http\Controllers\LoggedActivityController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 
 
@@ -66,6 +67,7 @@ Route::middleware(['user.auth','verified'])->group(function (){
     Route::get('/files/newFile', [FIleController::class,'create'])->name('create.file.form');
     Route::post('/files/addNewFile', [FIleController::class,'store'])->name('store.new.file');
     Route::get('/file/info/{id}',[FIleController::class,'info'])->name('file.info');
+
 });
 
 //File transactions
@@ -132,3 +134,9 @@ Route::middleware(['user.auth','admin','verified'])->group(function (){
     Route::post('/activities/delete',[LoggedActivityController::class,'deleteSelectedActivities'])->name('delete.selected.activities');
 });
 
+// Reports
+
+Route::middleware(['user.auth','verified'])->group( function(){
+    Route::get('/report/disposalFiles',[ReportController::class, 'disposalFiles'])->name('disposal.files');
+    Route::get('/report/mature/pdf/{date}',[ReportController::class, 'downloadMatureFiles'])->name('mature.download.pdf');
+});

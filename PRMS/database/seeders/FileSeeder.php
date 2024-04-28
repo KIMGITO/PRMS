@@ -24,7 +24,7 @@ class FileSeeder extends Seeder
 
     $data = [];
 
-    for ($i = 0; $i < 6; $i++) {
+    for ($i = 0; $i < 20; $i++) {
         $caseNumber = $faker->unique()->numberBetween(100, 999);
         $caseYear = $faker->numberBetween(2018, 2024);
 
