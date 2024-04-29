@@ -2,9 +2,26 @@
 @extends('simple-layout')
 @section('content')
 <main class="row" id="main">
+
+    <style>
+        #message-btn{
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            z-index: 1;
+            color: rgb(52, 185, 19);
+        }
+        #message-btn:hover{
+            cursor: pointer;
+            color: rgb(38, 18, 218);
+        }
+    </style>
+
     @include('sections.header')
       <div class="container-fluid d-flex justify-content-center alighn-items-center">
-        <div class="d-flex justify-content-end align-items-center col-10 col-md-8 col-lg-4" style="min-height: 87vh">
+        <div class="d-flex justify-content-end align-items-center col-10 col-md-8 col-lg-5" style="min-height: 87vh">
           <form method="POST" class=" p-2 rounded container-fluid text-primary bg-dark" action="{{ route('index.auth') }}">
               <div  class="card-title  p-1 rounded-top text-success">
                   <p class="lead ">
@@ -43,8 +60,11 @@
                   <button  type="submit" class="btn btn-secondary btn-block btn-sm position-absolute bottom-0 end-0">Login</button>
               </div>
           </form>
+            <a href="{{ route('message.new') }}" id="message-btn" ><i class="fa fa-comment-sms fa-6x fa-shake"></i></a> 
+        
       </div>
       </div>
+      
       @include('sections.footer')
 </main>
 @endsection

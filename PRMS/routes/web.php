@@ -10,8 +10,10 @@ use App\Http\Controllers\JudgeController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PurposeController;
 use App\Http\Controllers\CasetypeController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoggedActivityController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 
@@ -143,3 +145,20 @@ Route::middleware(['user.auth','verified'])->group( function(){
     Route::get('/report/onLoan/pdf',[ReportController::class, 'downloadOnLoanPDF'])->name('onloan.dolwnload.pdf');
 
 });
+
+
+/**
+ * Client 
+ */
+
+ Route::middleware((['user.auth','verified']))->group( function(){
+    Route::get('/client/new',[ClientController::class,'index'])->name('new.client');
+    Route::post('/client/register',[ClientController::class,'store'])->name('store.new.client');
+ });
+
+/**
+ * Messaging
+ */
+
+ Route::get('/message',[MessageController::class,'index'])->name('message.new');
+ Route::post('/message/send',[MessageController::class,'store'])->name('send.message');
