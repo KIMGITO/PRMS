@@ -38,10 +38,8 @@
                       </form>
                     </div>
                     <div class="col-md-2 col-lg-2">
-                      @php
-                          $date = Crypt::encrypt($date);
-                      @endphp
-                      <a href="{{ route('mature.download.pdf',['date'=>$date]) }}" class="btn btn-sm btn-outline-success">Download</a>
+                      <a href="{{ route('mature.download.pdf') }}" class="btn btn-sm btn-outline-success"> <i class='fa fa-eye text-info'></i>  <i class='fa fa-download mx-1'></i>  <i class='fa fa-print text-dark'></i> </a>
+
                     </div>
                  
                 </div>

@@ -440,3 +440,7 @@ var selectedIds = $('.activityCheckbox:checked').map(function() {
         $('#deleteSelectedForm').submit();
     });
 });
+
+
+
+

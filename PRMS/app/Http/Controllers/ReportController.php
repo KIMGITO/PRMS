@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\File;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
+use App\Models\Transaction;
+use App\Models\User;
 
 class ReportController extends Controller
 {
@@ -33,19 +35,22 @@ class ReportController extends Controller
     }
 
 
-public function downloadMatureFiles($date)
+    public function downloadMatureFiles()
     {
-        try{
-            $date = decrypt($date);
-        }catch(\Exception $e){
-            return redirect()->back()->with('error', 'Invalid Request');
+        $currentDate = now();
+        $quarter = $currentDate->quarter; 
+
+        if ($quarter <= 2) {
+            $date = '-06-30';
+        } else {
+            $date = '-12-31';
         }
         
         $currentDate = now();
 
         if($date == '-06-30'){
-            // $files = File::all();
             $files = File::where('disposal_date', '<=', $currentDate->year.'-06-30')->get();
+            $count = $files->count();
         }else{
             $files = File::all()->where('disposal_date', '>', $currentDate->year . '-06-30')
                 ->where('disposal_date', '<=', $currentDate->year . '-12-31');
@@ -53,16 +58,37 @@ public function downloadMatureFiles($date)
         
         $header = 'Due Files For Disposal ';
         $title = 'Files for disposal on '.$currentDate->year.$date;
-        $message = 'In compliance with Judicially policies and guidlines, 
-         this disposal report documents the case files due for disposal on. '.$currentDate->year.$date.'.
+        $message = 'In compliance with Judiciary policies and guidlines, 
+         this disposal report documents '.$count.' case files due for disposal on. '.$currentDate->year.$date.'.
         Following a comprehensive review of our inventory, it was determined 
         that the files listed below had surpassed their operational lifespan and 
         retention period and were no longer required for operation within the court. There for, this report
         was developed for presentation of the disposal files to the court admin.';
 
-        $view = view('reports.pdf')->with('files', $files)->with('time', Carbon::now())->with('header', $header)->with('title', $title)->with('message', $message);
-        $pdf = PDF::loadView('reports.pdf', $view->getData());
-        return $pdf->stream('mature-files.pdf');
+
+        $view = view('reports.disposal-pdf')->with('files', $files)->with('time', Carbon::now())->with('header', $header)->with('title', $title)->with('message', $message)->with('count',$count);
+        $pdf = PDF::loadView('reports.disposal-pdf', $view->getData());
+        
+        return $pdf->stream('mature files.pdf');
     }
+
+    public function downloadOnLoanPDF(){
+    $files = Transaction::all()->where('dateBack',null);
+    foreach($files as $transaction){
+        $transaction['file'] = File::where('id',$transaction->file_id)->first();
+        $transaction['user'] = User::select('first_name','last_name')->where('id',$transaction->user_id)->first();
+    }
+    $count =  $files->count();
+    $header = 'On Loan Files List';
+    $title = 'On Loan Files by date '. Carbon::now()->format('Y/m/d');
+    $message = 'Files listed below are on loan.';
+
+    $view = view('reports.on-loan-pdf')->with('files',$files)->with('time',Carbon::now())->with('header',$header)->with('title',$title)->with('message',$message);
+    $pdf = PDF::loadView('reports.on-loan-pdf',$view->getData());
+    
+    $pdf->setOption('footer-right', 'Page [page] of [toPage]');
+
+    return $pdf->stream('on loan files.pdf');
+}
 
 }

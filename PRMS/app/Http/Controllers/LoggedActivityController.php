@@ -19,7 +19,11 @@ public function index()
     $activities->each(function ($activity) {
         if ($activity->user_id !== 0) {
             $user = User::find($activity->user_id);
-            $activity->user_name = $user->first_name.' '.$user->last_name;
+            try{
+                $activity->user_name = $user->first_name.' '.$user->last_name;
+            }catch(\Throwable $e){
+                $activity->user_name = '( User Does Not Exist )';
+            }
         } else {
             $activity->user_name = 'N/A';
         }

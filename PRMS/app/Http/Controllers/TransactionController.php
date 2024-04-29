@@ -66,7 +66,6 @@ class TransactionController extends Controller
             ->first();
         if(!empty($data)){
             if($data->dateBack === null){
-                // Log the activity of attempting to loan an already loaned file
                 $activityDescription = 'Attempted to loan an already loaned file: ' . $data->file_id;
                 $activityAction = 'error';
                 event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, false));
@@ -116,12 +115,30 @@ class TransactionController extends Controller
 
     public function returnFile($id = null){
     $files = Transaction::all()->where('dateBack',null);
-    
-    foreach($files as $transaction){
+        foreach($files as $transaction){
         $transaction['file'] = File::where('id',$transaction->file_id)->first();
         $transaction['user'] = User::select('first_name','last_name')->where('id',$transaction->user_id)->first();
-       
+        $now = Carbon::today();
+        $expected = $transaction->dateExpected;
+        $diffInDays = $now->diffInDays($expected);
+        $diffInHours = $now->diffInHours($expected);
+
+
+    $days = floor($diffInHours / 24);
+    $hours = $diffInHours % 24;
+
+    $transaction['period'] = $days . ' days ' . $hours . ' hours';
+
+    if($now->lt($expected)){
+        $diffInHours = $diffInHours*-1;
     }
+
+    if($diffInHours > 0){
+        $transaction['status'] = 'overdue';
+    } else {
+        $transaction['status'] = 'pending';
+    }
+}
 
     $reasons = [];
     if($id !== null){
@@ -134,7 +151,6 @@ class TransactionController extends Controller
                 $reasons[] = $purpose->purpose;
             }
         } catch (\Throwable $th) {
-           // Log the activity of attempting to access an invalid file ID
             $activityDescription = 'Attempted to access an invalid file ID: ' . $id;
             $activityAction = 'error';
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, false));

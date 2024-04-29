@@ -51,5 +51,9 @@ class User extends Authenticatable
         return $this->hasMany(File::class);
     }
 
+    public function transaction(){
+        return $this->hasMany(Transaction::class);
+    }
+
    
 }

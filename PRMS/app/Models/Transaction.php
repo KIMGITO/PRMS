@@ -24,8 +24,9 @@ class Transaction extends Model
     }
 
     public function users(){
-        return $this->belogsTo(User::class);
+        return $this->belongsTo(User::class);
     }
+    
     public function purposes(){
         return $this->belongsToMany(Purpose::class,'transaction_purpose_pivot');
     }

@@ -36,6 +36,7 @@
   <script src="{{ asset('vendor/js/dashboard.js') }}"></script>
   <script src="{{ asset('vendor/js/app.min.js') }}"></script>
   <script src="{{ asset('app.js') }}"></script>
+  <script src="{{ asset('dashboard.js')}}"></script>
 
 </body>
 

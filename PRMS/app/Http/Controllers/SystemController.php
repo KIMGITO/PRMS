@@ -66,9 +66,14 @@ public function storeDepartment(Request $request)
 {
     try {
         $id = decrypt($id);
-        $department = Department::where('id', $id)->firstOrFail();
+    } catch (\Throwable $th) {
+        abort(404, 'File Not Found');
+    }
+        $department = Department::find($id);
+       
         if ($department->delete()) {
             // Log the activity of removing a department
+            // dd($department);
             $activityDescription = 'Department removed: ' . $department->name;
             $activityAction = 'remove';
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
@@ -77,9 +82,7 @@ public function storeDepartment(Request $request)
         } else {
             return redirect()->route('new.department')->with('error', 'Failed to remove the department.');
         }
-    } catch (\Throwable $th) {
-        abort(404, 'File Not Found');
-    }
+    
 }
 
     public function updateDepartment(Request $request, $id)

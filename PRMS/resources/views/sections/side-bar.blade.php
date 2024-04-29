@@ -92,20 +92,17 @@
               <div class="message-body ms-3 p-2 bg-dark">
                 <a href="{{ route('list.files') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
                   <i class="fa fa-file-invoice"></i>
-                  <p class="mb-0 fs-4"> All Files</p>
+                  <p class="mb-0 fs-4"> Files</p>
                 </a>
-                <a href="{{ route('create.file.form') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-info">
-                  <i class="fa fa-file-circle-plus"></i>
-                  <p class="mb-0 fs-4">Add File</p>
-                </a>
-                <a href="" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-warning">
-                  <i class="fa fa-file-export"></i>
-                  <p class="mb-0 fs-4">Loan File</p>
-                </a>
-                <a href="{{ route('return.file') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
+                <a href="{{ route('return.file') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-info">
                   <i class="fa fa-file-circle-check"></i>
-                  <p class="mb-0 fs-4">Return File</p>
+                  <p class="mb-0 fs-4">Loanes</p>
                 </a>
+                <a href="{{ route('disposal.files') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
+                  <i class="fa fa-trash"></i>
+                  <p class="mb-0 fs-4">Mature Files</p>
+                </a>
+                
               </div>
             </div>
             <li class="sidebar-item pt-2">
@@ -138,22 +135,15 @@
             </li>
             <div class="container collapse" id="reports">
               <div class="message-body ms-3 p-2 bg-dark">
-                <a href="{{ route('disposal.files') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
+                <a href="{{ route('onloan.dolwnload.pdf') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-info">
                   <i class="fs-4 p-1 mt-1 fa fa-file-invoice"></i>
-                  <p class="mb-0 fs-4"> Mature Files</p>
+                  <p class="mb-0 fs-4">Loan PDF</p>
                 </a>
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-info">
-                  <i class="fs-4 p-1 mt-1 fa fa-file-circle-plus"></i>
-                  <p class="mb-0 fs-4">Add File</p>
+                <a href="{{ route('mature.download.pdf') }}" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
+                  <i class="fs-4 fa fa-trash"></i>
+                  <p class="mb-0 fs-4">Disposal PDF</p>
                 </a>
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-warning">
-                  <i class="fs-4 p-1 mt-1 fa fa-file-export"></i>
-                  <p class="mb-0 fs-4">Loan File</p>
-                </a>
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-danger">
-                  <i class="fs-4 p-1 mt-1 fa fa-file-circle-check"></i>
-                  <p class="mb-0 fs-4">Return File</p>
-                </a>
+                
               </div>
             </div>
         @if (auth()->user()->role =='admin')

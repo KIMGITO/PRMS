@@ -1,5 +1,7 @@
 
-
+<head>
+  <title>Disposa Records</title>
+</head>
 <style>
   table {
     width: 100%;
@@ -86,7 +88,13 @@ th {
   
 </div>
 <div class="title"><h3>{{$title}}</h3></div>
-<div class="report-message"><p>{{$message}}</p></div>
+<div class="report-message">
+  <p>{{$message}}</p><br>
+  <p><b>Name</b> ........................................................................ 
+    <b>Sign</b> ..............................................
+    <b>Date</b> .............................
+  </p>
+</div>
 
 <div class="table-responsive">
       <table class="table table-hover text-dark  table-light-success">
@@ -145,6 +153,15 @@ th {
           
          
       </table>
+<div style="margin-top: 100px;">
+ <p style="font-size: 15px; font-weight:600;">
+    As the court administrator of Embu High Court, I here by approve  disposal request of {{$count}} case files as part of <a href="https://judiciary.go.ke/" target="_blank">Judiciary  Requirement</a>
+  </p>
+  <p>
+    <p><b>Name</b> ........................................................................
+    <b>Sign</b> ...................................................
+    <b>Date</b> ........................................</p>
+</div>
   </div>
 
 {{-- @endsection --}}

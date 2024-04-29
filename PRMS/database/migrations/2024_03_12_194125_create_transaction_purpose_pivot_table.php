@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaction_purpose_pivot', function (Blueprint $table) {
-            $table->foreignId('transaction_id')->constrained('transactions')->onDelete('cascade');
-            $table->foreignId('purpose_id')->constrained('purposes')->onDelete('cascade');
+            $table->foreignId('transaction_id')->constrained('transactions')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('purpose_id')->constrained('purposes')->onDelete('cascade')->onUpdate('cascade');
         });
         
     }

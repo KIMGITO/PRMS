@@ -37,7 +37,7 @@ class FileSeeder extends Seeder
         $plaintiffs = $this->generateNames($faker, $numPlaintiffs);
         $defendants = $this->generateNames($faker, $numDefendants);
 
-        $casetypeId = $faker->numberBetween(1, 5);
+        $casetypeId = $faker->numberBetween(1, 16);
         $judgeId = $faker->numberBetween(1, 5);
         $courtId = $faker->numberBetween(1, 5);
         $caseDescription = $faker->paragraph;

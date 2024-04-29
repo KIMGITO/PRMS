@@ -10,6 +10,7 @@ use App\Http\Controllers\JudgeController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\PurposeController;
 use App\Http\Controllers\CasetypeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoggedActivityController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
@@ -51,7 +52,7 @@ Route::middleware(['user.auth','verified'])->group(function(){
 
 //Admin routes
 Route::middleware([ 'user.auth','admin','verified'])->group(function () {
-    Route::get('/admin', [AuthController::class,'adminDash'])->name('admin');
+    Route::get('/admin', [DashboardController::class,'adminDash'])->name('admin');
     Route::get('/user/list', [UserController::class,'index'])->name('user.list');
     Route::get('/user/new', [UserController::class,'create'])->name('create.user.form');
     Route::get('/user/{id}', [UserController::class,'edit'])->name('edit.user.form');
@@ -138,5 +139,7 @@ Route::middleware(['user.auth','admin','verified'])->group(function (){
 
 Route::middleware(['user.auth','verified'])->group( function(){
     Route::get('/report/disposalFiles',[ReportController::class, 'disposalFiles'])->name('disposal.files');
-    Route::get('/report/mature/pdf/{date}',[ReportController::class, 'downloadMatureFiles'])->name('mature.download.pdf');
+    Route::get('/report/mature/pdf',[ReportController::class, 'downloadMatureFiles'])->name('mature.download.pdf');
+    Route::get('/report/onLoan/pdf',[ReportController::class, 'downloadOnLoanPDF'])->name('onloan.dolwnload.pdf');
+
 });
