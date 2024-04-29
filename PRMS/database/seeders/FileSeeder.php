@@ -24,8 +24,8 @@ class FileSeeder extends Seeder
 
     $data = [];
 
-    for ($i = 0; $i < 20; $i++) {
-        $caseNumber = $faker->unique()->numberBetween(100, 999);
+    for ($i = 0; $i < 10; $i++) {
+        $caseNumber = $faker->unique()->numberBetween(100, 2000);
         $caseYear = $faker->numberBetween(2018, 2024);
 
         $filingDate = $faker->dateTimeBetween($filingStartDate, $filingEndDate);

@@ -115,7 +115,7 @@
                 <td>{{$file->file->casetype->initials." ".$file->file->case_number}}</td>
                 <td>{{$file->user->first_name}}</td>
                 <td>{{$file->department->name}}</td>
-                <td>{{$file->name}}</td>
+                <td style="">{{$file->name}}</td>
                 <td>{{ date('d/m/Y', strtotime($file->issuedDate)) }}</td>
                 <td>{{ date('d/m/Y', strtotime($file->dateExpected)) }}</td>
             </tr>

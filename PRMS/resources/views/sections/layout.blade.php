@@ -8,7 +8,7 @@
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="{{ asset('vendor/css/styles.min.css') }}" />
   <link rel="stylesheet" href="{{ asset('vendor/css/app.css') }}" />
-   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+   {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> --}}
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 
