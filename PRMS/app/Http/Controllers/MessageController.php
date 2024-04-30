@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\Message;
+use App\Events\ActivityProcessed;
 
 class MessageController extends Controller
 {
@@ -31,5 +32,18 @@ class MessageController extends Controller
     } else {
         return redirect()->back()->with('error', 'Username or email not found');
     }
+    }
+
+    public function recived(Request $request){
+        $id = $request->id;
+        $update = Message::where(['id'=>$id])->update(['red'=>true]);
+        return true;
+    }
+
+
+public function clear(Request $request){
+    Message::truncate();
+    event(new ActivityProcessed(auth()->user()->id, 'Cleared all messages', 'delete', false));
+    return true;
 }
 }

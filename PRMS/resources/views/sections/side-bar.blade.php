@@ -105,26 +105,6 @@
                 
               </div>
             </div>
-            <li class="sidebar-item pt-2">
-              <a class="sidebar-link d-flex gap-3 px-2" href="#tasks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="tasks" >
-                <div class="align-center gap-4 d-flex px-2"><i class="fa fa-timeline text-dark fs-4 gap-5 mt-1"></i>
-                  <p class="fs-4"> Manage Tasks</p>
-                </div>
-              </a>
-            </li>
-            <div class="container collapse" id="tasks">
-              <div class="message-body ms-3 p-2 bg-dark">
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-success">
-                  <i class="fa fa-list-check"></i>
-                  <p class="mb-0 fs-4"> My Tasks</p>
-                </a>
-                <a href="javascript:void(0)" class="btn bt-success-outline d-flex align-items-center gap-3 dropdown-item py-1 text-warning">
-                  <i class="fa fa-up-right-from-square"></i>
-                  <p class="mb-0 fs-4">Asign Task</p>
-                </a>
-                
-              </div>
-            </div>
 
             <li class="sidebar-item pt-2">
               <a class="sidebar-link d-flex gap-3 px-2" href="#reports" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="reports" >

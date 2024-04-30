@@ -4,6 +4,17 @@
 @endsection
 @section('content')
 <div class="body-wrapper">
+  <style>
+    .time{
+      position: relative;
+      bottom: 0;
+      right: 0;
+    }
+    .scrollbar{
+      height: 350px;
+    }
+    
+  </style>
     <!--  Header Start -->
       @include('sections.header')
     <!--  Header End -->
@@ -30,7 +41,7 @@
             <div class="card bg-light rounded  ">
               <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
                 <div class="mb-3 mb-sm-0">
-                  <h5 class="card-title fw-semibold text-center  text-success">  Distribution of  <b> {{$pop_totals}} </b>Records</h5>
+                  <h5 class="card-title fw-semibold text-center  text-success"> Daily Transactions Rate -1 week </h5>
                 </div>
               </div>
 
@@ -78,73 +89,102 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-4 d-flex align-items-stretch">
-          <div class="card bg-light-danger w-100">
+        <div class="col-lg-5 d-flex align-items-stretch">
+          <div class="card bg-light-danger w-100 ">
             <div class="card-body p-4">
               <div class="mb-4">
-                <h5 class="card-title fw-semibold">Recent Transactions</h5>
+                @if ($message_count > 0 && $messages[0]->red == null)
+                  <span id="counter-budge" class="badge bg-danger rounded-circle lead position-absolute top-0 start-100  translate-middle">
+                    {{$message_count}}
+                  </span>
+                @endif
+                <h5 class="card-title fw-semibold">Messages </h5>
               </div>
-              <ul class="timeline-widget mb-0 position-relative mb-n5">
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                  <div class="timeline-time text-dark flex-shrink-0 text-end">09:30</div>
-                  <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                    <span class="timeline-badge border-2 border border-primary flex-shrink-0 my-8"></span>
-                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
+             
+                @if ($message_count > 0)
+                  <div class="card scrollbar scrollbar-success col-12" >
+                    <ul class="col-11">
+                      <li class="row py-1">
+                        <div class="col-6 fs-3 text-dark fw-bolder text-center py-2">Time</div>
+                        <div class="col-6 fs-3 text-dark fw-bolder  py-2">Name</div>
+                      </li>
+                      @foreach ($messages as $message)
+                      <div class="btn rounded-0 border-0 col-12 btn-outline-light-success  text-secondary" onclick="openSMS(@json($message->id))">
+                        <li class="row" id="info-{{$message->id}}">
+                          <div class="col-2 small">{{$loop->iteration}} </div>
+                          <div class="col-4 small">{{ \Carbon\Carbon::parse($message->created_at)->format('H:i') }}</div>
+                          <div class="col-4 fs-3 text-dark small mt-n1">{{ $message->client->name }}</div>
+                          @if ($message->red == null)
+                            <i id="check-{{$message->id}}" class="fa fa-check-circle col-1" aria-hidden="true"></i>
+                          @else
+                            <i class="fa fa-check-circle col-1 text-success" aria-hidden="true"></i>
+                          @endif
+                        </li>
+                        <div style="display: none" class="col-10 text-start small bg-dark rounded p-1 ms-4 my-3 overflow-wrap" id="sms-{{$message->id}}">
+                          <span class="text-success me-2 mb-2"> <u> Message: </u></span>
+                          <span class="text-info"> {{$message->body}}</span><br>
+                          
+                          <div class="time mt-4 text-end small"> <span class="me-2">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y') }}</span> {{ \Carbon\Carbon::parse($message->created_at)->format('H:i:s') }}</div>
+                        </div>
+                      </div>
+                      @endforeach
+                    </ul>
                   </div>
-                  <div class="timeline-desc fs-3 text-dark mt-n1">Payment received from John Doe of $385.90</div>
-                </li>
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                  <div class="timeline-time text-dark flex-shrink-0 text-end">10:00 am</div>
-                  <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                    <span class="timeline-badge border-2 border border-info flex-shrink-0 my-8"></span>
-                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                  </div>
-                  <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">New sale recorded <a
-                      href="javascript:void(0)" class="text-primary d-block fw-normal">#ML-3467</a>
-                  </div>
-                </li>
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                  <div class="timeline-time text-dark flex-shrink-0 text-end">12:00 am</div>
-                  <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                    <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
-                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                  </div>
-                  <div class="timeline-desc fs-3 text-dark mt-n1">Payment was made of $64.95 to Michael</div>
-                </li>
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                  <div class="timeline-time text-dark flex-shrink-0 text-end">09:30 am</div>
-                  <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                    <span class="timeline-badge border-2 border border-warning flex-shrink-0 my-8"></span>
-                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                  </div>
-                  <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">New sale recorded <a
-                      href="javascript:void(0)" class="text-primary d-block fw-normal">#ML-3467</a>
-                  </div>
-                </li>
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                  <div class="timeline-time text-dark flex-shrink-0 text-end">09:30 am</div>
-                  <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                    <span class="timeline-badge border-2 border border-danger flex-shrink-0 my-8"></span>
-                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                  </div>
-                  <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">New arrival recorded 
-                  </div>
-                </li>
-                <li class="timeline-item d-flex position-relative overflow-hidden">
-                  <div class="timeline-time text-dark flex-shrink-0 text-end">12:00 am</div>
-                  <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                    <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
-                  </div>
-                  <div class="timeline-desc fs-3 text-dark mt-n1">Payment Done</div>
-                </li>
-              </ul>
+                @else
+                    <div class="lead text-dark">
+                      No new Message,  New unrend messages will display here
+                    </div>
+                @endif
+              <script>
+                function openSMS(id) {
+                  var x = document.getElementById("sms-" + id);
+
+                  var openMessages = document.querySelectorAll("[id^='sms-']:not(#sms-" + id + ")");
+                  openMessages.forEach(function(message) {
+                    message.style.display = "none";
+                  });
+
+                  if (x.style.display === "none") {
+                    x.style.display = "block";
+                  } else {
+                    x.style.display = "none";
+                  }
+
+                  
+
+                  $.ajax({
+                    url: '/message/recived',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function(response) {
+                      $(`#check-${id}`).addClass('text-success');
+                      $(`#counter-budge`).style('opercity', '0.1');
+                    },
+                  });
+                }
+
+                function deleteMessages(){
+                  $.ajax({
+                    url: '/message/clear',
+                    type: 'POST',
+                    data: { delete: true },
+                    success: function(response) {
+                    },
+                  });
+                }
+              </script>
             </div>
+            @if ($message_count > 0)
+              <div class="btn btn-danger btn-sm col-4 text-end" onclick="deleteMessages()">Delete messages <i class="fa fa-trash fa-shake"></i> </div>
+            @endif
           </div>
         </div>
-        <div class="col-lg-8 d-flex align-items-stretch">
+        <div class="col-lg-7 d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">Recent Transactions</h5>
+              <h5 class="card-title fw-semibold mb-4">Recent Transactions
+                
+              </h5>
               <div class="table-responsive">
                 <table class="table text-nowrap mb-0 align-middle">
                   <thead class="text-dark fs-4">

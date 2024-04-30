@@ -162,3 +162,5 @@ Route::middleware(['user.auth','verified'])->group( function(){
 
  Route::get('/message',[MessageController::class,'index'])->name('message.new');
  Route::post('/message/send',[MessageController::class,'store'])->name('send.message');
+ Route::post('/message/recived',[MessageController::class,'recived'])->name('sms.recived');
+ Route::post('/message/clear',[MessageController::class,'clear'])->name('message.clear');
