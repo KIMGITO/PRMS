@@ -43,7 +43,7 @@ class AuthController extends Controller
         
         if (Auth::attempt($credentials)) {
             $user = $request->user();
-            $this->activity($user->id, 'User logged in', 'login', true);
+            $this->activity($user->id, 'User logged in :'.$user->id, 'login', true);
 
             if ($user->role == 'admin') {
                 return redirect()->intended('/admin');
@@ -66,10 +66,7 @@ class AuthController extends Controller
         ])->with('success', 'Welcome ' . auth()->user()->first_name);
     }
 
-    public function userDash() {
-        $types = Casetype::all();
-        return view('user.home', ['type'=>$types])->with('success','Welcome '.auth()->user()->first_name);
-    }
+    
     public function verifyEmailForm()
     {
         $user = auth()->user();
@@ -84,10 +81,10 @@ class AuthController extends Controller
         if ($request->input('otp') == $user->verified) {
             $user->verified = true;
             $user->save();
-            $this->activity($user->id, 'Email for user (' . $user->first_name . ' ' . $user->last_name . ') verified', 'verify', true);
+            $this->activity($user->id, 'User email  was verified successfully :'.$user->id, 'verify', true);
             return redirect()->intended('/' . $intendedRole)->with('success', $user->first_name . ' Your Email was verified successfully. Welcome');
         } else {
-            $this->activity($user->id, 'Failed to verify email for (' . $user->first_name . ' ' . $user->last_name . ')', 'verify', false);
+            $this->activity($user->id, 'User email was not verified successfully :'.$user->id, 'verify', false);
             return redirect()->back()->with(['error' => 'OTP Mismatched', 'resend' => true]);
         }
     }
@@ -98,7 +95,7 @@ class AuthController extends Controller
             $otp = $this->otp->getOTP();
             $user->verified = $otp;
             $user->save();
-            $this->activity($user->id, 'OTP verification sent for ( '.$user->first_name.' '.$user->last_name.' ) ','otp-sent', true);
+            $this->activity($user->id, 'User \'s OTP verification was sent :'.$user->id,'verify', true);
             event(new UserWithOTPCreated($user->email,$otp, 'OTP-verification'));
             return redirect()->route('verify.email.form')->with('success','A new OTP has been sent.');
         }
@@ -106,7 +103,7 @@ class AuthController extends Controller
         public function logout()
         {
             $user = auth()->user();
-            $this->activity($user->id, 'User logged out','logout', true);
+            $this->activity($user->id, 'User logged out :'.$user->id,'logout', true);
             Auth::logout();
             return redirect('/');
         }   
@@ -133,7 +130,6 @@ class AuthController extends Controller
             $response = event(new ResetPasswordRequest($subject, $link, $email));
 
             if(!empty($response[0])){
-                $this->activity(0, $response[0], 'reset-password-email', false);
                 return redirect()->back()->with('error',$response[0])->withInput();
             }else{
                 $availableToken = PasswordResetToken::where(['email'=>$email])->first();
@@ -141,13 +137,13 @@ class AuthController extends Controller
                     $availableToken->where(['email'=>$email])->delete();
                 }
                 if(PasswordResetToken::insert(['email'=>$email,'token'=>$token])){
-                    $this->activity($user->id, 'Reset password email sent for ('.$user->first_name.' '.$user->last_name.')', 'reset-password-email', true);
+                    $this->activity($user->id, 'User \'s resend password email was sent for :'.$user->id, 'update', true);
                     return redirect()->route('reset.password.email.sent');
                 }
             }
             
         }else{
-            $this->activity(0, 'Account with email '.$email.' not found', 'reset-password-email', false);
+            $this->activity(0, 'Account with email '.$email.' not found', 'update', false);
             return redirect()->back()->with('error','Account with that email was not found. Contact admin for more information ');
         }
     }
@@ -176,10 +172,10 @@ class AuthController extends Controller
         if(auth()->user() && auth()->user()->email == $email){
             Auth::logout();
         }
-        $this->activity($user->id, 'User ( '.$user->first_name.' '.$user->last_name.' ) updated password','update', true);
+        $this->activity($user->id, 'User updated password :'.$user->id,'update', true);
         return redirect('/')->with('success','Password successfully updated');
     }else{
-        $this->activity($user->id, 'Failed to update password for ( '.$user->first_name.' '.$user->last_name.' ) ','update', false);
+        $this->activity($user->id, 'User failed  to update password :'.$user->id,'update', false);
         return redirect()->back()->with('error','Failed to update password. Try again');
     }
 }

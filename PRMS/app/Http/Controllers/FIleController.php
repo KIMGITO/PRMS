@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use App\Events\ActivityProcessed;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class FIleController extends Controller
 {
@@ -36,16 +37,31 @@ class FIleController extends Controller
     return ($disposalDate->toDateString());
 }
 
+    /**
+     * Pagination function
+     */
 
+     private function paginate( $items, int $perPage = 5, ?int $page = null, $options = []): LengthAwarePaginator
+    {
+        $page = $page ?: (LengthAwarePaginator::resolveCurrentPage() ?: 1);
+        $items = collect($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+    
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $files = File::paginate(10);
-        foreach($files as $file){
-        $data = Transaction::where('file_id',$file->id)->orderBy('created_at','desc')->first();
-            if(!empty($data)){
+        $query = $request->input('query');
+       
+      
+        if($query == null){
+            
+            $files = File::paginate(10);
+            foreach($files as $file){
+            $data = Transaction::where('file_id',$file->id)->orderBy('created_at','desc')->first();
+                if(!empty($data)){
                 if($data['dateBack'] != null){
                     $file['status'] = 'available';
                 }else{
@@ -55,18 +71,74 @@ class FIleController extends Controller
                 $file['status'] = 'available';
             }
             $data['disposal'] = $this->calculateDisposalDate($file->created_at, $file->casetype->duration);
-            
-        }
+            }
 
-        $message = "";
-        if($files->count() == 0){
-            $message = "No files found";
-        }
-        return view('files.list-files',[
-            'files'=>$files,
-            'query'=>'',
-            'message'=>$message
-        ]);
+            $message = "";
+            if($files->count() == 0){
+                $message = "No files found";
+            }
+            return view('files.list-files',[
+                'files'=>$files,
+                'query'=>'',
+                'message'=>$message,
+                'search'=>false,
+                'kw' => ""
+                
+            ]);
+        }else{
+            $files = File::where(function ($queryBuilder) use ($query) {
+                if (preg_match('/\d/', $query, $match)) {
+                    $position = strpos($query, $match[0]);
+                    $number = substr($query, $position);
+                } else{
+                    $number = $query;
+                }
+                $queryBuilder->where('case_number', 'like', "%$$query%")
+                            ->orWhere('case_number', 'like', "%$number%")
+                            ->orWhere('case_description', 'like', "%$query%")
+                            ->orWhere('plaintiffs', 'like', "%$query%")
+                            ->orWhere('defendants', 'like', "%$query%");
+                })
+                ->orWhereHas('court', function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('name', 'like', "%$query%");
+                })
+                ->orWhereHas('judge', function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('name', 'like', "%$query%");
+                })
+                ->orWhereHas('casetype', function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('case_type', 'like', "%$query%")
+                    ->orWhere('initials', 'like', "%$query%");
+                })->paginate();
+
+                if(!empty($files)){
+                    foreach($files as $file){
+                        $data = Transaction::where('file_id',$file->id)->orderBy('created_at','desc')->first();
+                            if(!empty($data)){
+                                if($data['dateBack'] != null){
+                                    $file['status'] = 'available';
+                                }else{
+                                    $file['status']= 'on Loan';
+                                }
+                            }else{
+                                $file['status'] = 'available';
+                            }
+                    }
+                }
+                $message = "";
+    
+                if($files->count() == 0){
+                    $message="No files for ".$query;
+                }
+                // return $files;
+
+                return view('files.list-files',[
+                    'files'=>$files,
+                    'query'=>$query,
+                    'search'=>true,
+                    'message'=> $message,
+                    'kw' => $query
+                ]);
+            }
 
 
     }
@@ -74,122 +146,172 @@ class FIleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    
-     public function search(Request $request)
-     {
+
+     public function fileSearch(Request $request){
         $query = $request->input('query');
-        if(empty($query)){
-            return redirect()->route('list.files');
-        }
-        if(Str::startsWith($query,'filter=')){
-            $query = Str::replace('filter=','',$query);
-            $sorts = explode(':',$query);
-            $direction = strlen($sorts[0])>0 ? $sorts[0] : null;
-            $from = strlen($sorts[1])>0 ? $sorts[1] : null;
-            $to = strlen($sorts[2])>0 ? $sorts[2] : null;
-            
-            // switch to create query based on available query
-            switch (true) {
-                // Case 1: All variables are available
-                case(!empty($direction) && !empty($from) && !empty($to)):
-                    $result = File::whereBetween('filing_date', [$from, $to])->orderBy('filing_date',$direction);
-                    break;
-                // Case 2: Only $direction is available
-                case (!empty($direction) && empty($from) && empty($to)):
-                    $result = File::orderBy('filing_date',$direction);
-                    break;
-            
-                // Case 3: Only $from is available
-                case (empty($direction) && !empty($from) && empty($to)):
-                    $result = File::whereDate('filing_date', '>=',$from)->orderBy('filing_date','asc');
-                    break;
-            
-                // Case 4: Only $to is available
-                case (empty($direction) && empty($from) && !empty($to)):
-                    $result = File::whereDate('filing_date', '<=',$to)->orderBy('filing_date','desc');
-                    break;
-                // Case 5: Only $direction and $from are available
-                case (!empty($direction) && !empty($from) && empty($to)):
-                    $result = File::whereDate('filing_date', '>=',$from)->orderBy('filing_date',$direction);
-                    break;
-                    
-                // Case 6: Only $direction and $to are available
-                case (!empty($direction) && empty($from) && !empty($to)):
-                    $result = File::whereDate('filing_date', '<=',$to)->orderBy('filing_date',$direction);
-                    break;
-            
-                // Case 7: Only $from and $to are available
-                case (empty($direction) && !empty($from) && !empty($to)):
-                    $result = File::whereBetween('filing_date', [$from, $to])->orderBy('filing_date','asc');
-                    break;
-                // Case 8: None is available
-                case (empty($direction) && empty($from) && empty($to)):
-                    return redirect()->route('list.files');
-            }
-            $sortResults = $result->get();
-            
-            $message = "";
-            if($sortResults->count() == 0){
-                $message="No results found for that filter.";
-            } 
-            return view('files.list-files',[
-                'files'=>$sortResults,
-                'query'=>null,
-                'message'=> $message
-            ]);
-        }
-
-        $results = File::where(function ($queryBuilder) use ($query) {
-            $queryBuilder->where('case_number', 'like', "%$query%")
-                        ->orWhere('case_description', 'like', "%$query%")
-                        ->orWhere('plaintiffs', 'like', "%$query%")
-                        ->orWhere('defendants', 'like', "%$query%");
-            })
-            ->orWhereHas('court', function ($queryBuilder) use ($query) {
-                $queryBuilder->where('name', 'like', "%$query%");
-            })
-            ->orWhereHas('judge', function ($queryBuilder) use ($query) {
-                $queryBuilder->where('name', 'like', "%$query%");
-            })
-            ->orWhereHas('casetype', function ($queryBuilder) use ($query) {
-                $queryBuilder->where('case_type', 'like', "%$query%");
-            })->get();
-
-            if(!empty($results)){
-                foreach($results as $file){
-                    $data = Transaction::where('file_id',$file->id)->orderBy('created_at','desc')->first();
-                        if(!empty($data)){
-                            if($data['dateBack'] != null){
-                                $file['status'] = 'available';
-                            }else{
-                                $file['status']= 'on Loan';
-                            }
-                        }else{
-                            $file['status'] = 'available';
-                        }
+        
+        
+            $files = File::where(function ($queryBuilder) use ($query) {
+                if (preg_match('/\d/', $query, $match)) {
+                    $position = strpos($query, $match[0]);
+                    $number = substr($query, $position);
+                }else{
+                    $number = $query;
                 }
-            
-            }
+                
+                $queryBuilder->where('case_number', 'like', "%$query%")
+                            ->orWhere('case_number', 'like', "%$number%")
+                            ->orWhere('case_description', 'like', "%$query%")
+                            ->orWhere('plaintiffs', 'like', "%$query%")
+                            ->orWhere('defendants', 'like', "%$query%");
+                })
+                ->orWhereHas('court', function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('name', 'like', "%$query%");
+                })
+                ->orWhereHas('judge', function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('name', 'like', "%$query%");
+                })
+                ->orWhereHas('casetype', function ($queryBuilder) use ($query) {
+                    $queryBuilder->where('case_type', 'like', "%$query%")
+                    ->orWhere('initials', 'like', "%$query%");
+                });
 
-            
+                if(!empty($files)){
+                    foreach($files as $file){
+                        $data = Transaction::where('file_id',$file->id)->orderBy('created_at','desc')->first();
+                            if(!empty($data)){
+                                if($data['dateBack'] != null){
+                                    $file['status'] = 'available';
+                                }else{
+                                    $file['status']= 'on Loan';
+                                }
+                            }else{
+                                $file['status'] = 'available';
+                            }
+                    }
+                }
+                $message = "";
+    
+                if($files->count() == 0){
+                    $message="No files for ".$query;
+                }
+                // return $files;
 
-           
-            $message = "";
-            if($results->count() == 0){
-                $message="No results for ".$query;
-            }
-            return view('files.list-files',[
-                'files'=>$results,
-                'query'=>$query,
-                'message'=> $message
-            ]);
-
-
+                return view('files.search-results',[
+                    'files'=>$files,
+                    'query'=>$query,
+                    'search'=>true,
+                    'message'=> $message,
+                    'kw' => ''
+                ]);
      }
-    /**
-     * search file
-     */
-    public function create()
+    
+     public function search(Request $request, $id = null)
+     {
+        try{
+            if($id == null){
+                $id = null;
+            }else{
+                $id = decrypt($id);
+            }
+        }catch(\Exception $e){
+            abort(404);
+        }
+        
+        $query = $request->input('query');
+        if(empty($query) && $id == null){
+            return redirect()->route('list.files');
+        }elseif(empty($query) && $id != null){ 
+            
+            $files = File::where('id',$id)->paginate(10);
+            foreach($files as $file){
+                $data = Transaction::where('file_id',$file->id)->orderBy('created_at','desc')->first();
+                    if(!empty($data)){
+                        if($data['dateBack'] != null){
+                            $file['status'] = 'available';
+                        }else{
+                            $file['status']= 'on Loan';
+                        }
+                    }else{
+                        $file['status'] = 'available';
+                    }
+                    $data['disposal'] = $this->calculateDisposalDate($file->created_at, $file->casetype->duration);
+                }
+            $message = "";
+            // return $files;
+            return view('files.list-files',[
+                'files'=>$files,
+                'query'=>$query,
+                'search' => true,
+                'message'=> $message,
+                'kw'=>""
+            ]);
+        }
+
+        else{
+            if(Str::startsWith($query,'filter=')){
+                $query = Str::replace('filter=','',$query);
+                $sorts = explode(':',$query);
+                $direction = strlen($sorts[0])>0 ? $sorts[0] : null;
+                $from = strlen($sorts[1])>0 ? $sorts[1] : null;
+                $to = strlen($sorts[2])>0 ? $sorts[2] : null;
+                
+                // switch to create query based on available query
+                switch (true) {
+                    // Case 1: All variables are available
+                    case(!empty($direction) && !empty($from) && !empty($to)):
+                        $result = File::whereBetween('filing_date', [$from, $to])->orderBy('filing_date',$direction);
+                        break;
+                    // Case 2: Only $direction is available
+                    case (!empty($direction) && empty($from) && empty($to)):
+                        $result = File::orderBy('filing_date',$direction);
+                        break;
+                
+                    // Case 3: Only $from is available
+                    case (empty($direction) && !empty($from) && empty($to)):
+                        $result = File::whereDate('filing_date', '>=',$from)->orderBy('filing_date','asc');
+                        break;
+                
+                    // Case 4: Only $to is available
+                    case (empty($direction) && empty($from) && !empty($to)):
+                        $result = File::whereDate('filing_date', '<=',$to)->orderBy('filing_date','desc');
+                        break;
+                    // Case 5: Only $direction and $from are available
+                    case (!empty($direction) && !empty($from) && empty($to)):
+                        $result = File::whereDate('filing_date', '>=',$from)->orderBy('filing_date',$direction);
+                        break;
+                        
+                    // Case 6: Only $direction and $to are available
+                    case (!empty($direction) && empty($from) && !empty($to)):
+                        $result = File::whereDate('filing_date', '<=',$to)->orderBy('filing_date',$direction);
+                        break;
+                
+                    // Case 7: Only $from and $to are available
+                    case (empty($direction) && !empty($from) && !empty($to)):
+                        $result = File::whereBetween('filing_date', [$from, $to])->orderBy('filing_date','asc');
+                        break;
+                    // Case 8: None is available
+                    case (empty($direction) && empty($from) && empty($to)):
+                        return redirect()->route('list.files');
+                }
+                $sortResults = $result->get();
+                
+                $message = "";
+                if($sortResults->count() == 0){
+                    $message="No results found for that filter.";
+                } 
+                return view('files.list-files',[
+                    'files'=>$sortResults,
+                    'query'=>null,
+                    'message'=> $message,
+                    'search' => true
+                ]);
+            }
+
+        }
+
+    }
+    /**request
     {
         $types = Casetype::all();
         $judges = Judge::all();

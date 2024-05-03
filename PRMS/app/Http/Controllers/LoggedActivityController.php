@@ -51,7 +51,6 @@ public function deleteSelectedActivities(Request $request)
         $selectedIds = explode(',', $selectedIds);
         // dd($selectedIds);
         LoggedActivities::whereIn('id', $selectedIds)->delete();
-        $this->store(Auth()->user()->id, 'deleted logged activities', 'delete', true); 
         return redirect()->back()->with('success', 'Logged Activities deleted successfully');
     } catch (\Exception $e) {
         $this->store(Auth()->user()->id, 'Failed to delete logged activities', 'delete', false); 

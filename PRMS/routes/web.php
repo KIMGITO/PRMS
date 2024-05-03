@@ -48,7 +48,7 @@ Route::middleware(['verified'])->group(function(){
 //Auth middleware group
 Route::middleware(['user.auth','verified'])->group(function(){
     Route::get('/', function(){return view('index');})->name('index');
-    Route::get('/user', [AuthController::class,'userDash'])->name('user');
+    Route::get('/user', [DashboardController::class,'userDash'])->name('user');
     Route::get('/logOut',[AuthController::class,'logout'])->name('logout');
 });
 
@@ -65,8 +65,9 @@ Route::middleware([ 'user.auth','admin','verified'])->group(function () {
 
 // files management ....
 Route::middleware(['user.auth','verified'])->group(function (){
-    Route::get('/files/listFIles', [FIleController::class,'index'])->name('list.files');
-    Route::post('/files/searchFile', [FIleController::class,'search'])->name('search.file');
+    Route::get('/files/listFiles', [FIleController::class,'index'])->name('list.files');
+    Route::get('/files/searchFile', [FIleController::class,'fileSearch'])->name('search.file');
+    Route::get('/files/searchFiles/{id}', [FIleController::class,'search'])->name('get.file');
     Route::get('/files/newFile', [FIleController::class,'create'])->name('create.file.form');
     Route::post('/files/addNewFile', [FIleController::class,'store'])->name('store.new.file');
     Route::get('/file/info/{id}',[FIleController::class,'info'])->name('file.info');

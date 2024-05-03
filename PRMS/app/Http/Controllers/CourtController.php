@@ -46,7 +46,7 @@ class CourtController extends Controller
     $court = new Court();
     $court->name = $request->input('name');
 
-    $activityDescription = 'Created a new court: ' . $court->name;
+    $activityDescription = 'Court was created ';
     $activityAction = 'create';
     $activityStatus = $court->save();
 
@@ -54,7 +54,7 @@ class CourtController extends Controller
         event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, true));
         return redirect()->back()->with('success','New Court, '.$request->input('name').' Was added.');
     }else{
-        event(new ActivityProcessed(auth()->user()->id, 'Failed to create a new court', 'create', false));
+        event(new ActivityProcessed(auth()->user()->id, 'Failed to create  court', 'create', false));
         return redirect()->back()->with('error','Error when adding , '.$request->input('name'))->withInput();
     }
     }  

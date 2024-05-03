@@ -22,19 +22,19 @@
             <div class="card mb-0">
               <div class="card-body">
                
-                <p class="text-center fs-5">Files List</p>
+                <p class="text-center fs-5">Search Results List</p>
                 {{-- search field --}}
                 <div class="row justify-content-between align-items-center mb-3">
                     <div class="text-nowrap logo-img text-center d-block col-md-5 col-lg-4">
                         <img src="{{ asset('images/logos/logo.png') }}" class="rounded-circle" width="150" alt="">
                     </div>
                     <div class="col-md-5 col-lg-4">
-                      <form class="form-inline" method="get" action="{{ route('list.files') }}">
+                      <form class="form-inline" method="get" action="{{ route('search.file') }}">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light-success offset border-0 table-hover rounded-start-5" id="searchIcon">
                               <button type="submit" id="searchBtn" class="btn rounded-pill text-dark "><i class="fas fa-search "></i></button>
                             </span>
-                            <input type="text" {{-- id="searchInput" --}}  name="query" placeholder="search user " class="form-control bg-light-success border-0 px-4 p-0 rounded-start-0 rounded-end-5 text-dark fs-4" placeholder="Search" aria-label="Search" aria-describedby="searchIcon" value="{{$kw}}">
+                            <input type="text" {{-- id="searchInput" --}}  name="query" placeholder="search user " class="form-control bg-light-success border-0 px-4 p-0 rounded-start-0 rounded-end-5 text-dark fs-4" placeholder="Search" aria-label="Search" aria-describedby="searchIcon" >
                             
                         </div>
                       </form>
@@ -62,7 +62,7 @@
                     <table class="table table-hover text-dark  table-light-success">
                         <thead class="fw-bolder fs-8">
                             <caption class="text-center fs-7 fw-5">
-                                {{ $files->links('pagination::bootstrap-5',['class'=>'pagination'])}}
+                                {{-- {{ $files->links('pagination::bootstrap-5',['class'=>'pagination'])}} --}}
                               
                               {{-- Total Files: {{ $files->count() }} --}}
                             

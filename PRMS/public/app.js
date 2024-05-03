@@ -365,5 +365,42 @@ var selectedIds = $('.activityCheckbox:checked').map(function() {
 });
 
 
+                function openSMS(id) {
+                  var x = document.getElementById("sms-" + id);
+
+                  var openMessages = document.querySelectorAll("[id^='sms-']:not(#sms-" + id + ")");
+                  openMessages.forEach(function(message) {
+                    message.style.display = "none";
+                  });
+
+                  if (x.style.display === "none") {
+                    x.style.display = "block";
+                  } else {
+                    x.style.display = "none";
+                  }
+
+                  
+
+                  $.ajax({
+                    url: '/message/recived',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function(response) {
+                      $(`#check-${id}`).addClass('text-success');
+                      $(`#counter-budge`).style('opercity', '0.1');
+                    },
+                  });
+                }
+
+                function deleteMessages(){
+                  $.ajax({
+                    url: '/message/clear',
+                    type: 'POST',
+                    data: { delete: true },
+                    success: function(response) {
+                    },
+                  });
+                }
+   
 
 

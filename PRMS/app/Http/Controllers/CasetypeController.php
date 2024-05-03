@@ -43,7 +43,7 @@ class CasetypeController extends Controller
         $case->case_type = $request->input('caseType');
         $case->duration = $request->input('duration');
 
-        $activityDescription = 'Created a new casetype';
+        $activityDescription = 'Casetype was created '.$request->input('caseType');
         $activityAction = 'create';
         $activityStatus = true;
 
@@ -95,7 +95,7 @@ class CasetypeController extends Controller
         $case->case_type = $request->input('caseType');
         $case->duration = $request->input('duration');
 
-        $activityDescription = 'Updated casetype from ' . $originalName . ' to ' . $request->input('caseType');
+        $activityDescription = 'Casetype updated from ' . $request->input('caseType');
         $activityAction = 'update';
         $activityStatus = true;
 
@@ -103,7 +103,7 @@ class CasetypeController extends Controller
             event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
             return  redirect()->route('config.caseType')->with('success', 'CaseType '. $case->case_type.' was updated.');
         }else{
-            event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));
+            event(new ActivityProcessed(auth()->user()->id, 'Failed to update casetype ', $activityAction, false));
             return  redirect()->back()->with('error', 'CaseType '. $case->case_type.' was not updated.');
         }
     } else {
@@ -122,7 +122,7 @@ class CasetypeController extends Controller
         }
             $case = Casetype::where('id', $id)->firstOrFail();
             if($case->delete()){
-                $activityDescription = 'Deleted a casetype';
+                $activityDescription = 'Casetype deleted';
                 $activityAction = 'delete';
                 $activityStatus = true;
                 event(new ActivityProcessed(auth()->user()->id, $activityDescription, $activityAction, $activityStatus));

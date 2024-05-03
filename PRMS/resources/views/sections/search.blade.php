@@ -1,4 +1,4 @@
-<form class="form-inline">
+<form class="form-inline" method="get" action="{{ route('list.files') }}">
     <div class="input-group input-group-sm">
         <span class="input-group-text bg-light-success offset border-0 table-hover rounded-start-5" id="searchIcon">
           <button type="submit" class="btn rounded-pill text-dark "><i class="fas fa-search "></i></button>

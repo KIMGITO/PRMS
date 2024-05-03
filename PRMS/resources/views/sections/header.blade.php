@@ -1,3 +1,10 @@
+<style>
+  header{
+    position: absolute;
+    top: 0px;
+  }
+</style>
+
 <header class="app-header p-0" >
     <nav class="navbar col-12 navbar-expand-lg bg-secondary">
       <ul class="navbar-nav">

@@ -1,140 +1,98 @@
+use Carbon\Carbon;
 @extends('sections.layout')
 @section('display-logo')
     d-block d-lg-none
 @endsection
 @section('content')
-<div class="body-wrapper" style="min-height: 93vh">
+<div class="body-wrapper" >
     <!--  Header Start -->
-      @include('sections.header')
+        @include('sections.header')
     <!--  Header End -->
     <div class="container-fluid">
-      <!--  Row 1 -->
       <div class="row">
-        <div class=" w-100">
-          <div class="card-body">
-            <div class="row justify-content-between align-items-center bg- rounded d-flex">
-              <div class="col-md-6">
                 @if(session('success'))
                   <div class="text-success fw-bold">
                       {{ session('success') }}
                   </div>
-              @endif
-              @if(session('erorr'))
+                @endif
+                @if(session('erorr'))
                   <div class="alert alert-danger fw-bold">
                       {{ session('error') }}
                   </div>
-              @endif
-                <h5 class="card-title fw-bolder  fs-4 my-3 text-start">Quick Search A file:</h5>
+                @endif
+
+                <style>
+                  .search-card{
+                    position: relative;
+                    top: 14%;
+                    position: fixed;
+                    z-index: 10;
+                  }
+                </style>
+          <div class="card bg-dark ms-4 col-9 search-card  ">
+            <div class="row mt-1 container-fluid">
+              <div class="col-md-6">
+                <h5 class="card-title fw-bolder text-white fs-4 my-3 text-start">Quick Search A file:</h5>
               </div>
               <div class="col-md-6">
                 @include('sections.search')
               </div>
-            </div>
-            
-            <div class="offcanvas offcanvas-top col-md-9 col-lg-6 " tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel" style="height: 100vh">
-              <div class="offcanvas-header">
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-              </div>
-              <div class="bg-sccess h-100" >
-                <div class=" offcanvas-body p-2 rounded" id="calendar"></div>
-              </div>
-            </div>
-
-            <div class="row mt-2 d-block">
-              <div class="bg-light d-flex justify-content-center align-items-center  ">
-                  <div class="table-responsive scrollbar scrollbar-info mt-2">
-                    <table class="table table-striped table-hover table-borderless table-primary ">
-                      <thead class="table-info">  
-                        <tr>
-                          <th>Column 1</th>
-                          <th>Column 2</th>
-                          <th>Coldgdgdumn 3</th>
-                          <th>Column 1</th>
-                          <th>Column 2</th>
-                          <th>Column dgdfg3</th>
-                        </tr>
-                      </thead>
-                      <tbody class="table-group-divider">
-                        <tr class="table-primary">
-                          <td scope="row">Item</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                          <td>Itegfggdgdgm</td>
-                          <td>Item</td>
-                          <td>Itesffdgdm</td>
-                        </tr>
-                        <tr  class="table-primary">
-                          <td scope="row">Item</td>
-                          <td>csdsdtem</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                        </tr>
-                        <tr class="table-primary">
-                          <td scope="row">Item</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                          <td>Itegfggdgdgm</td>
-                          <td>Item</td>
-                          <td>Itesffdgdm</td>
-                        </tr>
-                        <tr  class="table-primary">
-                          <td scope="row">Item</td>
-                          <td>csdsdtem</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                          <td>Item</td>
-                        </tr>
-                      </tbody>
-                      <tfoot>
-                        
-                      </tfoot>
-                    </table>
-                  </div>
-                  
-                </table>
-              </div>
-            </div>        
+            </div>     
           </div>
-        </div>
       </div>
     </div>
     <div class="m-3">
       <div class="row">
         <div class="col-md-11 container ">
           <div class="row">
-            <div class="col-md-3 px-1">
-              <div class="card bg-light-info">
-                <div class="card-header h3 text-center">Trending</div>
+            <div class=" px-1">
+              <div class="card">
+                <table class="table table-hover  table-light-success">
+                  <thead class="fw-bolder ">
+                      <div class="text-priamry fw-semibold" id="tableComment"></div>
+                      <tr class="bg-dark text-white">
+                          <th>Case Type</th>
+                          <th>Case Number</th>
+                          <th>Presiding Judge</th>
+                          <th>Filing Date</th>
+                          <th>Status</th>
+                          <th></th>
+                      </tr>
+                  </thead>
+                  
+                  <tbody id="dataList">
+                    @foreach ($files as $file)
+                      <tr class="p-0">
+                        @php
+                            $id = Crypt::encrypt($file->id);
+                        @endphp
+                        <td class="text-capitalize">{{$file->casetype->case_type}}</td>
+                        <td>{{$file->casetype->initials.' '.$file->case_number}}</td>
+                        <td class="text-capitalize">{{$file->judge->name}}</td>
+                        <td class="text-capitalize small text-info">{{\Carbon\Carbon::parse($file->filing_date)->format('d/m/Y')}}</td>
+                        <td class="text-capitalize {{ $file->status == 'available'?' text-primary':'text-danger' }}">{{$file->status}}</td>
+                        <td class="h-1"><a href="{{ route('get.file',['id'=>$id]) }}" class="link link-success h-4">more</td>
+                      </tr>
+                    @endforeach
+                    @if ($message !="")
+                    <tr>
+                      <td colspan="7"><div class="fw-bold text-danger text-center">{{$message}}</div></td>
+                    </tr>
+                    @endif
+                  </tbody>
+              </table>
+              </div>
+            </div>
+            {{-- <div class="col-md-3 px-1">
+              <div class="card bg-light-info rounded-circle">
+                <div class="mt-3 h3 text-center">Trending</div>
                 <div class="card-body justify-content-center align-items-center">
-                  <p class="display-3 counter text-center" data-count="8">
+                  <p class="display-2 counter text-center" data-count="8">
                   </p>
                   <p class="text-center">Records</p>
                 </div>
               </div>
-            </div>
-            <div class="col-md-5 px-1">
-              <div class="card bg-light-success">
-                <div class="card-header h2 text-center">Total</div>
-                <div class="card-body justify-content-center align-items-center">
-                  <p class="display-3 counter text-center" data-count="5000">
-                  </p>
-                  <p class="text-center">Records</p>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 px-1">
-              <div class="card bg-light-danger">
-                <div class="card-header h2 text-center">Mature</div>
-                <div class="card-body justify-content-center align-items-center">
-                  <p class="display-3 counter count-numbers text-center" data-count="230">
-                  </p>
-                  <p class="text-center">Records</p>
-                </div>
-              </div>
-            </div>
+            </div> --}}
           </div>
         </div>
         {{-- <div class="col-md-4 my-3">
@@ -142,73 +100,53 @@
         </div> --}}
       </div>
       <div class="row px-4">
-        <div class="col-md-7">
+        <div class="col-md-8">
           <div class="card">
             <div class="card-header h4 d-flex justify-content-between align-items-center">
-              <p class="h2">Incoming Requests</p>
-                <p class="counter bg-light-success rounded-1 p-2 " data-count="4"></p>
+              <p class="h2">Requests</p>
+                <p class="counter bg-light-success rounded-1 p-2 " data-count="{{$message_count}}"></p>
               
             </div>
             <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-primary">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">From</th>
-                      <th scope="col">Request</th>
-                      <th class="bg-light-success" scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="">
-                      <td scope="row">#01</td>
-                      <td>John</td>
-                      <td>Succ 23/2014</td>
-                      <td class="text-center bg-light-success"> <button type="button" class="btn btn-success btn-sm"> Accept <i class="fas fa-question-circle fa-fw"></i> </button> </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-md-5">
-        <div class="card">
-          <div class="card-header h2">Pending Activities</div>
-          <div class="card-body">
-            <div
-              class="table-responsive"
-            >
-              <table
-                class="table table-primary"
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">Task</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Done?</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="">
-                    <td scope="row">01</td>
-                    <td>wash ufhe gerbger gje gregjkerg ren erkf erferfkf </td>
-                    <td>
-                      <div class="d-grid gap-2">
-                        <button type="button" name="" id="" class="btn btn-primary btn-sm">
-                          Done
-                        </button>
+              @if ($message_count > 0)
+                  <div class="card scrollbar scrollbar-success col-12" >
+                    <ul class="col-11">
+                      <li class="row py-1">
+                        <div class="col-6 fs-3 text-dark fw-bolder text-center py-2">Time</div>
+                        <div class="col-6 fs-3 text-dark fw-bolder  py-2">Name</div>
+                      </li>
+                      @foreach ($messages as $message)
+                      <div class="btn rounded-0 border-0 col-12 btn-outline-light-success  text-secondary" onclick="openSMS(@json($message->id))">
+                        <li class="row" id="info-{{$message->id}}">
+                          <div class="col-2 small">{{$loop->iteration}} </div>
+                          <div class="col-4 small">{{ \Carbon\Carbon::parse($message->created_at)->format('H:i') }}</div>
+                          <div class="col-4 fs-3 text-dark small mt-n1">{{ $message->client->name }}</div>
+                          @if ($message->red == null)
+                            <i id="check-{{$message->id}}" class="fa fa-check-circle col-1" aria-hidden="true"></i>
+                          @else
+                            <i class="fa fa-check-circle col-1 text-success" aria-hidden="true"></i>
+                          @endif
+                        </li>
+                        <div style="display: none" class="col-10 text-start small bg-dark rounded p-1 ms-4 my-3 overflow-wrap" id="sms-{{$message->id}}">
+                          <span class="text-success me-2 mb-2"> <u> Message: </u></span>
+                          <span class="text-info"> {{$message->body}}</span><br>
+                          
+                          <div class="time mt-4 text-end small"> <span class="me-2">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y') }}</span> {{ \Carbon\Carbon::parse($message->created_at)->format('H:i:s') }}</div>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      @endforeach
+                    </ul>
+                  </div>
+                @else
+                    <div class="lead text-dark">
+                      No new Message,  New unrend messages will display here
+                    </div>
+                @endif
             </div>
-            
           </div>
         </div>
+        <div class="col-md-2">
+        
         
         </div>
       </div>

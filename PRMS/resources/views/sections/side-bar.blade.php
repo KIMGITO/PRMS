@@ -123,9 +123,21 @@
                   <i class="fs-4 fa fa-trash"></i>
                   <p class="mb-0 fs-4">Disposal Rpt</p>
                 </a>
+      
+
                 
               </div>
             </div>
+
+            <li class="sidebar-item pt-2">
+              <a class="sidebar-link d-flex gap-3 px-2" href="{{ route('new.client')}}"  >
+                <div class="align-center gap-4 d-flex px-2"><i class="fa fa-user-plus text-dark fs-4 gap-5 mt-1"></i>
+                  <p class="fs-4"> Add Client</p>
+                </div>
+              </a>
+            </li>
+
+
         @if (auth()->user()->role =='admin')
         <div class="sidebar-item ">
           <a class="sidebar-link d-flex gap-3 px-2" href="#system" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="system" >

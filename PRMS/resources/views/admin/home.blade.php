@@ -20,8 +20,8 @@
     <!--  Header End -->
     <div class="container-fluid ">
       <!--  Row 1 -->
-      <div class="row bg-light-success py-1">
-        <div class="col-lg-8 d-flex align-items-strech justify-content-center">
+      <div class="row bg-white py-1">
+        <div class="col-lg-8 d-flex align-items-strech justify-content-center shandow-lg">
           <div class=" w-100">
             @if(session('success'))
                   <div class="text-success fw-bold">
@@ -88,10 +88,10 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-lg-5 d-flex align-items-stretch">
-          <div class="card bg-light-danger w-100 ">
-            <div class="card-body p-4">
+      <div class="row my-1 rounded ">
+        <div class="col-lg-5 card  p-1 d-flex align-items-stretch">
+          <div class="w-100 ">
+            <div class="card-body p-1">
               <div class="mb-4">
                 @if ($message_count > 0 && $messages[0]->red == null)
                   <span id="counter-budge" class="badge bg-danger rounded-circle lead position-absolute top-0 start-100  translate-middle">
@@ -135,194 +135,65 @@
                       No new Message,  New unrend messages will display here
                     </div>
                 @endif
-              <script>
-                function openSMS(id) {
-                  var x = document.getElementById("sms-" + id);
-
-                  var openMessages = document.querySelectorAll("[id^='sms-']:not(#sms-" + id + ")");
-                  openMessages.forEach(function(message) {
-                    message.style.display = "none";
-                  });
-
-                  if (x.style.display === "none") {
-                    x.style.display = "block";
-                  } else {
-                    x.style.display = "none";
-                  }
-
-                  
-
-                  $.ajax({
-                    url: '/message/recived',
-                    type: 'POST',
-                    data: { id: id },
-                    success: function(response) {
-                      $(`#check-${id}`).addClass('text-success');
-                      $(`#counter-budge`).style('opercity', '0.1');
-                    },
-                  });
-                }
-
-                function deleteMessages(){
-                  $.ajax({
-                    url: '/message/clear',
-                    type: 'POST',
-                    data: { delete: true },
-                    success: function(response) {
-                    },
-                  });
-                }
-              </script>
+              
             </div>
             @if ($message_count > 0)
               <div class="btn btn-danger btn-sm col-4 text-end" onclick="deleteMessages()">Delete messages <i class="fa fa-trash fa-shake"></i> </div>
             @endif
           </div>
         </div>
-        <div class="col-lg-7 d-flex align-items-stretch">
-          <div class="card w-100">
-            <div class="card-body p-4">
+        <div class="col-lg-7 card p-1 d-flex align-items-stretch">
+          <div class=" w-100">
+            <div class="card-body">
               <h5 class="card-title fw-semibold mb-4">Recent Transactions
                 
               </h5>
-              <div class="table-responsive">
-                <table class="table text-nowrap mb-0 align-middle">
+              <div class="table-responsive col-12">
+                <table class="table text-nowrap mb-0 align-middle col-12">
                   <thead class="text-dark fs-4">
                     <tr>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Id</h6>
+                        <h6 class="fw-semibold mb-0">No</h6>
                       </th>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Assigned</h6>
+                        <h6 class="fw-semibold mb-0">User</h6>
                       </th>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Name</h6>
+                        <h6 class="fw-semibold mb-0">Description</h6>
                       </th>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Priority</h6>
+                        <h6 class="fw-semibold mb-0">Status</h6>
                       </th>
                       <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Budget</h6>
+                        <h6 class="fw-semibold mb-0">Time</h6>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
+                    @foreach ($logged_activities as $activity) 
                     <tr>
-                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0">1</h6></td>
-                      <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1">Sunil Joshi</h6>
-                          <span class="fw-normal">Web Designer</span>                          
+                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0">{{ $loop->iteration }}</h6></td>
+                      <td class="border-bottom-0 small">
+                          <h6 class="fw-semibold mb-1">{{$activity->first_name}}</h6>
+                          <span class="fw-normal">{{ $activity->last_name }}</span>                          
                       </td>
                       <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal">Elite Admin</p>
+                        <p class="mb-0 fw-normal small overflow-wrap"> {{$activity->description}} </p>
                       </td>
                       <td class="border-bottom-0">
                         <div class="d-flex align-items-center gap-2">
-                          <span class="badge bg-primary rounded-3 fw-semibold">Low</span>
+                          <span class="badge small bg-{{($activity->status == true) ? 'success' : 'danger'}} rounded-3 fw-semibold">
+                            {{($activity->status == true) ? 'success' : 'failed' }}
+                          </span>
                         </div>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0 fs-4">$3.9</h6>
+                        <p class=" mb-0 small "> {{\Carbon\Carbon::parse($activity->created_at)->format('H:i:s')}}<br> {{\Carbon\Carbon::parse($activity->created_at)->format('d/m')}} </p>
                       </td>
                     </tr> 
-                    <tr>
-                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0">2</h6></td>
-                      <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1">Andrew McDownland</h6>
-                          <span class="fw-normal">Project Manager</span>                          
-                      </td>
-                      <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal">Real Homes WP Theme</p>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                          <span class="badge bg-secondary rounded-3 fw-semibold">Medium</span>
-                        </div>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0 fs-4">$24.5k</h6>
-                      </td>
-                    </tr> 
-                    <tr>
-                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0">3</h6></td>
-                      <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1">Christopher Jamil</h6>
-                          <span class="fw-normal">Project Manager</span>                          
-                      </td>
-                      <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal">MedicalPro WP Theme</p>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                          <span class="badge bg-danger rounded-3 fw-semibold">High</span>
-                        </div>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0 fs-4">$12.8k</h6>
-                      </td>
-                    </tr>      
-                    <tr>
-                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0">4</h6></td>
-                      <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1">Nirav Joshi</h6>
-                          <span class="fw-normal">Frontend Engineer</span>                          
-                      </td>
-                      <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal">Hosting Press HTML</p>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                          <span class="badge bg-success rounded-3 fw-semibold">Critical</span>
-                        </div>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0 fs-4">$2.4k</h6>
-                      </td>
-                    </tr>                       
+                    @endforeach      
                   </tbody>
                 </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-6 col-xl-3">
-          <div class="card overflow-hidden rounded-2">
-            <div class="position-relative">
-              <a href="javascript:void(0)"><img src="{{ asset('images/logos/logo.png') }}" class="card-img-top rounded-0" alt="..."></a>
-              <a href="javascript:void(0)" class="bg-primary rounded-circle p-2 text-white d-inline-flex position-absolute bottom-0 end-0 mb-n3 me-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add To Cart"><i class="ti ti-basket fs-4"></i></a>                      </div>
-            <div class="card-body pt-3 p-4">
-              <h6 class="fw-semibold fs-4">Boat Headphone</h6>
-              <div class="d-flex align-items-center justify-content-between">
-                <h6 class="fw-semibold fs-4 mb-0">$50 <span class="ms-2 fw-normal text-muted fs-3"><del>$65</del></span></h6>
-                <ul class="list-unstyled d-flex align-items-center mb-0">
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="card overflow-hidden rounded-2">
-            <div class="position-relative">
-              <a href="javascript:void(0)"><img src="{{ asset('images/logos/logo.png') }}" class="card-img-top rounded-0" alt="..."></a>
-              <a href="javascript:void(0)" class="bg-primary rounded-circle p-2 text-white d-inline-flex position-absolute bottom-0 end-0 mb-n3 me-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add To Cart"><i class="ti ti-basket fs-4"></i></a>                      </div>
-            <div class="card-body pt-3 p-4">
-              <h6 class="fw-semibold fs-4">MacBook Air Pro</h6>
-              <div class="d-flex align-items-center justify-content-between">
-                <h6 class="fw-semibold fs-4 mb-0">$650 <span class="ms-2 fw-normal text-muted fs-3"><del>$900</del></span></h6>
-                <ul class="list-unstyled d-flex align-items-center mb-0">
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="me-1" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                  <li><a class="" href="javascript:void(0)"><i class="ti ti-star text-warning"></i></a></li>
-                </ul>
               </div>
             </div>
           </div>

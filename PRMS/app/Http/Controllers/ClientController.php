@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Client;
+use App\Events\ActivityProcessed;
 
 class ClientController extends Controller
 {
@@ -39,6 +40,7 @@ class ClientController extends Controller
         $client->user_name = $userName; 
         $client->save();
 
+        event(new ActivityProcessed(auth()->user()->id, 'Client was created', 'create', true));
         return redirect()->route('new.client')->with('success', 'Successfully registered. Your Username is '.$userName);
     }
 }
